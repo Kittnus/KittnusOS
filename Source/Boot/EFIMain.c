@@ -1,4 +1,4 @@
-#include "UEFI.h"
+#include "EFI.h"
 
 EFI_STATUS EfiMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 {
