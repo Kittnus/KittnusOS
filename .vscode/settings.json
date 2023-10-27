@@ -2,5 +2,6 @@
     "files.associations": {
         "uefi.h": "c",
         "common.h": "c"
-    }
+    },
+    "cmake.sourceDirectory": "G:/Coding/KittnusOS"
 }
