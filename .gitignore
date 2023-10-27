@@ -52,4 +52,5 @@ build/**/*
 include/*
 lib/*
 bin/*
+[Bb]inaries/*
 test/test_runner
