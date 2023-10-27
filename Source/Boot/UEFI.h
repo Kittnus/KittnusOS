@@ -26,6 +26,8 @@ typedef struct
     UINT32 Reserved;
 } EFI_TABLE_HEADER;
 
+typedef struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL EFI_SIMPLE_TEXT_INPUT_PROTOCOL;
+
 typedef EFI_STATUS(EFIAPI *EFI_INPUT_RESET)(
     IN EFI_SIMPLE_TEXT_INPUT_PROTOCOL *This,
     IN BOOLEAN ExtendedVerification);
@@ -39,16 +41,21 @@ typedef struct
     CHAR16 UnicodeChar;
 } EFI_INPUT_KEY;
 
+typedef EFI_STATUS(EFIAPI *EFI_INPUT_READ_KEY)(
+    IN EFI_SIMPLE_TEXT_INPUT_PROTOCOL *This,
+    OUT EFI_INPUT_KEY *Key);
+
+//***************************************************
+// EFI_EVENT
+//******************************************************
+typedef VOID *EFI_EVENT;
+
 typedef struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL
 {
     EFI_INPUT_RESET Reset;
     EFI_INPUT_READ_KEY ReadKeyStroke;
     EFI_EVENT WaitForKey;
 } EFI_SIMPLE_TEXT_INPUT_PROTOCOL;
-
-typedef EFI_STATUS(EFIAPI *EFI_INPUT_READ_KEY)(
-    IN EFI_SIMPLE_TEXT_INPUT_PROTOCOL *This,
-    OUT EFI_INPUT_KEY *Key);
 
 //******************************************************
 // SIMPLE_TEXT_OUTPUT_MODE
@@ -63,6 +70,8 @@ typedef struct
     INT32 CursorRow;
     BOOLEAN CursorVisible;
 } SIMPLE_TEXT_OUTPUT_MODE;
+
+typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL;
 
 typedef EFI_STATUS(EFIAPI *EFI_TEXT_RESET)(
     IN EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This,
@@ -180,6 +189,11 @@ typedef UINT64 EFI_VIRTUAL_ADDRESS;
 // Memory Descriptor Version Number
 //******************************************************
 #define EFI_MEMORY_DESCRIPTOR_VERSION 1
+
+//******************************************************
+// EFI_PHYSICAL_ADDRESS
+//******************************************************
+typedef UINT64 EFI_PHYSICAL_ADDRESS;
 
 //******************************************************
 // EFI_MEMORY_DESCRIPTOR
@@ -381,10 +395,6 @@ typedef enum
     EfiUnacceptedMemoryType,
     EfiMaxMemoryType
 } EFI_MEMORY_TYPE;
-//******************************************************
-// EFI_PHYSICAL_ADDRESS
-//******************************************************
-typedef UINT64 EFI_PHYSICAL_ADDRESS;
 
 typedef EFI_STATUS(EFIAPI *EFI_ALLOCATE_PAGES)(
     IN EFI_ALLOCATE_TYPE Type,
@@ -411,10 +421,6 @@ typedef EFI_STATUS(EFIAPI *EFI_ALLOCATE_POOL)(
 typedef EFI_STATUS(EFIAPI *EFI_FREE_POOL)(
     IN VOID *Buffer);
 
-//***************************************************
-// EFI_EVENT
-//******************************************************
-typedef VOID *EFI_EVENT;
 //******************************************************
 // Event Types
 //******************************************************
