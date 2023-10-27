@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common.h"
+#include "../Common.h"
 
 #define IN
 #define OUT
@@ -39,16 +39,16 @@ typedef struct
     CHAR16 UnicodeChar;
 } EFI_INPUT_KEY;
 
-typedef EFI_STATUS(EFIAPI *EFI_INPUT_READ_KEY)(
-    IN EFI_SIMPLE_TEXT_INPUT_PROTOCOL *This,
-    OUT EFI_INPUT_KEY *Key);
-
 typedef struct _EFI_SIMPLE_TEXT_INPUT_PROTOCOL
 {
     EFI_INPUT_RESET Reset;
     EFI_INPUT_READ_KEY ReadKeyStroke;
     EFI_EVENT WaitForKey;
 } EFI_SIMPLE_TEXT_INPUT_PROTOCOL;
+
+typedef EFI_STATUS(EFIAPI *EFI_INPUT_READ_KEY)(
+    IN EFI_SIMPLE_TEXT_INPUT_PROTOCOL *This,
+    OUT EFI_INPUT_KEY *Key);
 
 //******************************************************
 // SIMPLE_TEXT_OUTPUT_MODE
@@ -171,31 +171,6 @@ typedef EFI_STATUS(EFIAPI *EFI_GET_WAKEUP_TIME)(
 typedef EFI_STATUS(EFIAPI *EFI_SET_WAKEUP_TIME)(
     IN BOOLEAN Enable,
     IN EFI_TIME *Time OPTIONAL);
-
-typedef enum
-{
-    EfiReservedMemoryType,
-    EfiLoaderCode,
-    EfiLoaderData,
-    EfiBootServicesCode,
-    EfiBootServicesData,
-    EfiRuntimeServicesCode,
-    EfiRuntimeServicesData,
-    EfiConventionalMemory,
-    EfiUnusableMemory,
-    EfiACPIReclaimMemory,
-    EfiACPIMemoryNVS,
-    EfiMemoryMappedIO,
-    EfiMemoryMappedIOPortSpace,
-    EfiPalCode,
-    EfiPersistentMemory,
-    EfiUnacceptedMemoryType,
-    EfiMaxMemoryType
-} EFI_MEMORY_TYPE;
-//******************************************************
-// EFI_PHYSICAL_ADDRESS
-//************************************
-typedef UINT64 EFI_PHYSICAL_ADDRESS;
 
 //******************************************************
 // EFI_VIRTUAL_ADDRESS
