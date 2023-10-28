@@ -1,0 +1,31 @@
+name: Build bootloader
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - master
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install build dependencies
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y gcc make
+
+            - name: Build bootloader
+              run: make
+
+            - name: Upload bootloader
+              uses: actions/upload-artifact@v3
+              with:
+                  name: Bootloader
+                  path: Binaries/BOOTX64.efi
