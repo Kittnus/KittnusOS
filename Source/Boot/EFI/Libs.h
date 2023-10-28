@@ -9,7 +9,7 @@ void PrintLn(CHAR16 *format, ...);
     do                                       \
     {                                        \
         EFI_STATUS status = function;        \
-        if (status != EFI_SUCCESS)           \
+        if (EFI_ERROR(status))               \
             PrintLn(L"Error: %d\n", status); \
     } while (0)
 
