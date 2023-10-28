@@ -1,17 +1,6 @@
 #pragma once
 
 #include "API.h"
-#include <stdarg.h>
-
-void PrintLn(CHAR16 *format, ...);
-
-#define EFI_CALL(function)                   \
-    do                                       \
-    {                                        \
-        EFI_STATUS status = function;        \
-        if (EFI_ERROR(status))               \
-            PrintLn(L"Error: %d\n", status); \
-    } while (0)
 
 EFI_HANDLE ImageHandle;
 EFI_SYSTEM_TABLE *SystemTable;
@@ -21,6 +10,49 @@ EFI_RUNTIME_SERVICES *RuntimeServices;
 
 EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *ConOut;
 EFI_SIMPLE_TEXT_INPUT_PROTOCOL *ConIn;
+
+void Print(CHAR16 *string)
+{
+    ConOut->OutputString(ConOut, string);
+}
+
+void PrintLn(CHAR16 *string)
+{
+    ConOut->OutputString(ConOut, string);
+    ConOut->OutputString(ConOut, L"\r\n");
+}
+
+CHAR16 *UINT64ToString(UINT64 value)
+{
+    CHAR16 buffer[21];
+    CHAR16 *result = buffer + 20;
+
+    *result = L'\0';
+
+    if (value == 0)
+        *result-- = L'0';
+    else
+        while (value > 0)
+        {
+            *result-- = L'0' + (CHAR16)(value % 10);
+            value /= 10;
+        }
+
+    return result;
+}
+
+#define EFI_CALL(function)              \
+    do                                  \
+    {                                   \
+        EFI_STATUS status = function;   \
+        if (EFI_ERROR(status))          \
+        {                               \
+            Print(L"Error: ");          \
+            Print((CHAR16 *)#function); \
+            Print(L" returned ");       \
+            Print(UINT64ToString(status));              \
+        }                               \
+    } while (0)
 
 void InitializeLibs(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 {
@@ -35,73 +67,6 @@ void InitializeLibs(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 
     EFI_CALL(ConOut->Reset(ConOut, TRUE));
     EFI_CALL(ConIn->Reset(ConIn, TRUE));
-}
-
-static void PrintInternal(CHAR16 *format, va_list args)
-{
-    for (CHAR16 *c = format; *c != '\0'; c++)
-    {
-        if (*c == '%')
-        {
-            switch (*(c++))
-            {
-            case 'd':
-            {
-                int value = va_arg(args, int);
-
-                CHAR16 buffer[32];
-                int i = 0;
-
-                if (value < 0)
-                {
-                    buffer[i++] = (CHAR16)'-';
-                    value = -value;
-                }
-
-                do
-                {
-                    buffer[i++] = (CHAR16)(L'0' + (value % 10));
-                    value /= 10;
-                } while (value > 0);
-
-                while (i-- >= 0)
-                    ConOut->OutputString(ConOut, buffer + i);
-
-                break;
-            }
-            case 's':
-            {
-                CHAR16 *string = va_arg(args, CHAR16 *);
-
-                while (*string != '\0')
-                    ConOut->OutputString(ConOut, string++);
-
-                break;
-            }
-            default:
-                break;
-            }
-        }
-        else
-            ConOut->OutputString(ConOut, c);
-    }
-}
-
-void Print(CHAR16 *format, ...)
-{
-    va_list args;
-    va_start(args, format);
-    PrintInternal(format, args);
-    va_end(args);
-}
-
-void PrintLn(CHAR16 *format, ...)
-{
-    va_list args;
-    va_start(args, format);
-    PrintInternal(format, args);
-    ConOut->OutputString(ConOut, L"\n\r");
-    va_end(args);
 }
 
 void SetColor(UINTN color)
