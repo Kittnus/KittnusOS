@@ -11,8 +11,7 @@ EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 
         if (StrCmp(command, L"help") == 0)
         {
-            PrintLn(L"Commands:");
-            SetCursorColumn(2);
+            PrintLn(L"\nCommands:");
             PrintLn(L"shutdown - shuts down the computer.");
             PrintLn(L"restart - restarts the computer.");
             PrintLn(L"reboot - reboots the computer.");
@@ -23,6 +22,8 @@ EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
             Restart();
         else if (StrCmp(command, L"reboot") == 0)
             Reboot();
+        else
+            PrintLn(L"\nUnknown Command.");
     }
 
     EFI_PHYSICAL_ADDRESS physicalBuffer;
