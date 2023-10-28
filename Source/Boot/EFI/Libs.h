@@ -114,6 +114,7 @@ CHAR16 *ReadLn()
         }
     }
 
+    PrintLn(L"");
     return buffer;
 }
 
