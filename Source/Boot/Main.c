@@ -1,5 +1,49 @@
 #include "EFI/Libs.h"
 
+typedef struct
+{
+    CHAR16 *commandName;
+    CHAR16 *commandDescription;
+    void *handler;
+} CommandInfo;
+
+void ShowHelp();
+
+CommandInfo commands[] = {
+    {L"help", L"Show available commands", ShowHelp},
+    {L"shutdown", L"Shut down the machine", Shutdown},
+    {L"restart", L"Restart the machine", Restart},
+    {L"reboot", L"Reboot the machine", Reboot}};
+
+void ShowHelp()
+{
+    PrintLn(L"Commands:");
+    SetCursorColumn(1);
+    for (UINTN i = 0; i < sizeof(commands) / sizeof(CommandInfo); i++)
+    {
+        Print(commands[i].commandName);
+        Print(L" - ");
+        PrintLn(commands[i].commandDescription);
+
+        if (i < sizeof(commands) / sizeof(CommandInfo) - 1)
+            NewLine();
+    }
+    ResetCursorColumn();
+}
+
+void ExecuteCommand(CHAR16 *command)
+{
+    for (UINTN i = 0; i < sizeof(commands) / sizeof(CommandInfo); i++)
+        if (StrCmp(command, commands[i].commandName) == 0)
+        {
+            ((void (*)())commands[i].handler)();
+            return;
+        }
+
+    Print(L"Unknown command: ");
+    PrintLn(command);
+}
+
 EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 {
     InitializeEFI(imageHandle, systemTable);
@@ -8,24 +52,7 @@ EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     while (1)
     {
         CHAR16 *command = ReadLn();
-
-        if (StrCmp(command, L"help") == 0)
-        {
-            PrintLn(L"Commands:");
-            SetCursorColumn(1);
-            PrintLn(L"Shutdown - Shuts down the machine");
-            PrintLn(L"Restart - Restarts the machine");
-            PrintLn(L"Reboot - Reboots the machine");
-            ResetCursorColumn();
-        }
-        else if (StrCmp(command, L"shutdown") == 0)
-            Shutdown();
-        else if (StrCmp(command, L"restart") == 0)
-            Restart();
-        else if (StrCmp(command, L"reboot") == 0)
-            Reboot();
-        else
-            PrintLn(L"Unknown command");
+        ExecuteCommand(command);
     }
 
     EFI_PHYSICAL_ADDRESS physicalBuffer;

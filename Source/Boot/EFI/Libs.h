@@ -16,18 +16,23 @@ EFI_UNICODE_COLLATION_PROTOCOL *UnicodeInterface;
 
 UINTN globalCursorColumn = 0;
 
+void SetCursorColumn(UINTN column);
+
 void Print(CHAR16 *string)
 {
+    SetCursorColumn(globalCursorColumn);
     ConOut->OutputString(ConOut, string);
 }
 
-void SetCursorColumn(UINTN column);
+void NewLine()
+{
+    ConOut->OutputString(ConOut, L"\r\n");
+}
 
 void PrintLn(CHAR16 *string)
 {
-    SetCursorColumn(globalCursorColumn);
     Print(string);
-    ConOut->OutputString(ConOut, L"\r\n");
+    NewLine();
 }
 
 void SetColor(UINTN color)
@@ -128,7 +133,7 @@ CHAR16 *ReadLn()
         }
     }
 
-    PrintLn(L"");
+    NewLine();
     return buffer;
 }
 
