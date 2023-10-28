@@ -5,7 +5,6 @@
         "api.h": "c",
         "types.h": "c",
         "errors.h": "c",
-        "libs.h": "c",
-        "functional": "c"
+        "libs.h": "c"
     }
 }

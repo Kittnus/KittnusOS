@@ -11,10 +11,10 @@ OBJS := $(patsubst $(SRC_DIR)/%.c, $(INT_DIR)/%.o, $(SRCS))
 all: $(OBJS) $(OUT_DIR)/BOOTX64.efi
 
 $(INT_DIR):
-	@mkdir -p $@
+	@mkdir $@
 
 $(OUT_DIR):
-	@mkdir -p $@
+	@mkdir $@
 
 $(INT_DIR)/%.o: $(SRC_DIR)/%.c | $(INT_DIR)
 	@mkdir -p $(@D)
