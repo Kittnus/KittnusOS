@@ -5,6 +5,3 @@ Thumbs.db
 # Build and bin directories
 Binaries/*
 Intermediate/*
-
-# VSCode generated files
-.vscode/*
