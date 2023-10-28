@@ -60,6 +60,43 @@ void InitializeEFI(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     RuntimeServices = systemTable->RuntimeServices;
 }
 
+CHAR16 *ReadLn()
+{
+    Print(L"> ");
+
+    EFI_INPUT_KEY key;
+    CHAR16 *buffer = 0;
+    UINTN bufferSize = 128;
+    UINTN index;
+
+    while (1)
+    {
+        EFI_CALL(BootServices->WaitForEvent(1, &ConIn->WaitForKey, 0));
+        EFI_CALL(ConIn->ReadKeyStroke(ConIn, &key));
+
+        if (key.UnicodeChar == L'\r')
+        {
+            buffer[index] = L'\0';
+            break;
+        }
+        else if (key.UnicodeChar == L'\b' && index > 0)
+        {
+            index--;
+            buffer[index] = L'\0';
+            Print(L"\b");
+        }
+        else if (index < bufferSize - 1)
+        {
+            buffer[index] = key.UnicodeChar;
+            index++;
+            buffer[index] = L'\0';
+            Print(&key.UnicodeChar);
+        }
+    }
+
+    return buffer;
+}
+
 void WaitForKey()
 {
     EFI_CALL(BootServices->WaitForEvent(1, &ConIn->WaitForKey, 0));
