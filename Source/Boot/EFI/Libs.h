@@ -41,17 +41,17 @@ CHAR16 *UINT64ToString(UINT64 value)
     return result;
 }
 
-#define EFI_CALL(function)              \
-    do                                  \
-    {                                   \
-        EFI_STATUS status = function;   \
-        if (EFI_ERROR(status))          \
-        {                               \
-            Print(L"Error: ");          \
-            Print((CHAR16 *)#function); \
-            Print(L" returned ");       \
-            Print(UINT64ToString(status));              \
-        }                               \
+#define EFI_CALL(function)                 \
+    do                                     \
+    {                                      \
+        EFI_STATUS status = function;      \
+        if (EFI_ERROR(status))             \
+        {                                  \
+            Print(L"Error: ");             \
+            Print((CHAR16 *)#function);    \
+            Print(L" returned ");          \
+            Print(UINT64ToString(status)); \
+        }                                  \
     } while (0)
 
 void InitializeLibs(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
