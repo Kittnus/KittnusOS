@@ -10,17 +10,17 @@ typedef struct
 void ShowHelp();
 
 CommandInfo commands[] = {
-    {L"help", L"Show available commands", ShowHelp},
-    {L"shutdown", L"Shut down the machine", Shutdown},
-    {L"restart", L"Restart the machine", Restart},
-    {L"reboot", L"Reboot the machine", Reboot}};
+    {L"Help", L"Show available commands", ShowHelp},
+    {L"Shutdown", L"Shut down the machine", Shutdown},
+    {L"Restart", L"Restart the machine", Restart},
+    {L"Reboot", L"Reboot the machine", Reboot}};
 
 void ShowHelp()
 {
     PrintLn(L"Commands:");
-    SetCursorColumn(1);
     for (UINTN i = 0; i < sizeof(commands) / sizeof(CommandInfo); i++)
     {
+        SetCursorColumn(1);
         Print(commands[i].commandName);
         Print(L" - ");
         PrintLn(commands[i].commandDescription);
@@ -28,7 +28,6 @@ void ShowHelp()
         if (i < sizeof(commands) / sizeof(CommandInfo) - 1)
             NewLine();
     }
-    ResetCursorColumn();
 }
 
 void ExecuteCommand(CHAR16 *command)

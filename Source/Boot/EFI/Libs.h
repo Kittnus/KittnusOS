@@ -14,19 +14,14 @@ EFI_RUNTIME_SERVICES *RuntimeServices;
 EFI_GUID UnicodeInterfaceGuid = EFI_UNICODE_COLLATION_PROTOCOL2_GUID;
 EFI_UNICODE_COLLATION_PROTOCOL *UnicodeInterface;
 
-UINTN globalCursorColumn = 0;
-
-void SetCursorColumn(UINTN column);
-
 void Print(CHAR16 *string)
 {
-    SetCursorColumn(globalCursorColumn);
     ConOut->OutputString(ConOut, string);
 }
 
 void NewLine()
 {
-    ConOut->OutputString(ConOut, L"\r\n");
+    Print(L"\r\n");
 }
 
 void PrintLn(CHAR16 *string)
@@ -82,7 +77,6 @@ void SetCursorPosition(UINTN column, UINTN row)
 
 void SetCursorColumn(UINTN column)
 {
-    globalCursorColumn = column;
     SetCursorPosition(column, ConOut->Mode->CursorRow);
 }
 
