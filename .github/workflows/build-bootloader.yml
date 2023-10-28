@@ -1,25 +1,19 @@
 name: Build bootloader
 
-on:
-    push:
-        branches:
-            - master
-    pull_request:
-        branches:
-            - master
+on: [push, pull_request]
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: windows-latest
 
         steps:
-            - name: Checkout code
+            - name: Check out code
               uses: actions/checkout@v4
 
-            - name: Install build dependencies
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y gcc make
+            - name: Set up MinGW
+  			  uses: egor-tensin/setup-mingw@v2
+  			  	  with:
+    			  platform: x64
 
             - name: Build bootloader
               run: make
@@ -27,5 +21,5 @@ jobs:
             - name: Upload bootloader
               uses: actions/upload-artifact@v3
               with:
-                  name: Bootloader
+                  name: bootloader
                   path: Binaries/BOOTX64.efi
