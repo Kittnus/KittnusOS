@@ -60,6 +60,11 @@ void InitializeEFI(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     RuntimeServices = systemTable->RuntimeServices;
 }
 
+void SetCursorPosition(UINTN column, UINTN row)
+{
+    EFI_CALL(ConOut->SetCursorPosition(ConOut, column, row));
+}
+
 void WaitForKey()
 {
     EFI_CALL(BootServices->WaitForEvent(1, &ConIn->WaitForKey, 0));
