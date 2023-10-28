@@ -8,8 +8,12 @@ EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 
     SetColor(EFI_LIGHTGREEN);
     PrintLn(L"Press any key to exit...");
+    ResetColor();
 
     WaitForKey();
+
+    PrintLn(L"Shutting down...");
+    Shutdown();
 
     return EFI_SUCCESS;
 }

@@ -27,6 +27,11 @@ void SetColor(UINTN color)
     ConOut->SetAttribute(ConOut, color);
 }
 
+void ResetColor()
+{
+    SetColor(EFI_LIGHTGRAY);
+}
+
 // TODO: Make better error handling
 #define EFI_CALL(function)            \
     do                                \
@@ -36,7 +41,7 @@ void SetColor(UINTN color)
         {                             \
             SetColor(EFI_RED);        \
             Print(L"Error");          \
-            SetColor(EFI_WHITE);      \
+            ResetColor();             \
         }                             \
     } while (0)
 
@@ -57,6 +62,20 @@ void InitializeEFI(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 
 void WaitForKey()
 {
-    EFI_STATUS status;
-    EFI_CALL(BootServices->WaitForEvent(1, &ConIn->WaitForKey, &status));
+    EFI_CALL(BootServices->WaitForEvent(1, &ConIn->WaitForKey, 0));
+}
+
+void Reboot()
+{
+    RuntimeServices->ResetSystem(EfiResetCold, EFI_SUCCESS, 0, 0);
+}
+
+void Restart()
+{
+    RuntimeServices->ResetSystem(EfiResetWarm, EFI_SUCCESS, 0, 0);
+}
+
+void Shutdown()
+{
+    RuntimeServices->ResetSystem(EfiResetShutdown, EFI_SUCCESS, 0, 0);
 }
