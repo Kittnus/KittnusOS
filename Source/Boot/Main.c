@@ -8,7 +8,6 @@ EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     while (1)
     {
         CHAR16 *command = ReadLn();
-        // TODO: tolower command using EFI_UNICODE_COLLATION_PROTOCOL
 
         if (StrCmp(command, L"help"))
         {
@@ -44,10 +43,12 @@ EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
         kernelFilePages,
         &physicalBufferKernelFile));
 
+    /*
     UINT64 stackStart = physicalBuffer;
     UINT64 stackSize = 1024 * 1024;
     UINT64 kernelStart = stackStart + stackSize;
     UINT64 kernelMaxSize = allocSize - stackSize;
+    */
 
     return EFI_SUCCESS;
 }

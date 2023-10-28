@@ -7,6 +7,11 @@
 
 typedef UINTN EFI_STATUS;
 
+#define EFI_UNICODE_COLLATION_PROTOCOL2_GUID                                           \
+    {                                                                                  \
+        0xa4c751fc, 0x23ae, 0x4c3e, { 0x92, 0xe9, 0x49, 0x64, 0xcf, 0x63, 0xf3, 0x49 } \
+    }
+
 typedef struct _EFI_UNICODE_COLLATION_PROTOCOL EFI_UNICODE_COLLATION_PROTOCOL;
 
 typedef INTN(EFIAPI *EFI_UNICODE_COLLATION_STRICOLL)(
@@ -39,12 +44,7 @@ typedef BOOLEAN(EFIAPI *EFI_UNICODE_COLLATION_STRTOFAT)(
     IN UINTN FatSize,
     OUT CHAR8 *Fat);
 
-#define EFI_UNICODE_COLLATION_PROTOCOL2_GUID                                           \
-    {                                                                                  \
-        0xa4c751fc, 0x23ae, 0x4c3e, { 0x92, 0xe9, 0x49, 0x64, 0xcf, 0x63, 0xf3, 0x49 } \
-    }
-
-typedef struct
+typedef struct _EFI_UNICODE_COLLATION_PROTOCOL
 {
     EFI_UNICODE_COLLATION_STRICOLL StriColl;
     EFI_UNICODE_COLLATION_METAIMATCH MetaiMatch;
