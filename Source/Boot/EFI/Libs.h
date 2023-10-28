@@ -11,6 +11,9 @@ EFI_SIMPLE_TEXT_INPUT_PROTOCOL *ConIn;
 EFI_BOOT_SERVICES *BootServices;
 EFI_RUNTIME_SERVICES *RuntimeServices;
 
+EFI_GUID UnicodeInterfaceGuid = EFI_UNICODE_COLLATION_PROTOCOL2_GUID;
+EFI_UNICODE_COLLATION_PROTOCOL *UnicodeInterface;
+
 void Print(CHAR16 *string)
 {
     ConOut->OutputString(ConOut, string);
@@ -58,11 +61,23 @@ void InitializeEFI(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 
     BootServices = systemTable->BootServices;
     RuntimeServices = systemTable->RuntimeServices;
+
+    EFI_CALL(BootServices->LocateProtocol(&UnicodeInterfaceGuid, 0, (void **)&UnicodeInterface));
 }
 
 void SetCursorPosition(UINTN column, UINTN row)
 {
     EFI_CALL(ConOut->SetCursorPosition(ConOut, column, row));
+}
+
+void SetCursorColumn(UINTN column)
+{
+    SetCursorPosition(column, ConOut->Mode->CursorRow);
+}
+
+void SetCursorRow(UINTN row)
+{
+    SetCursorPosition(ConOut->Mode->CursorColumn, row);
 }
 
 CHAR16 *ReadLn()
@@ -71,8 +86,8 @@ CHAR16 *ReadLn()
 
     EFI_INPUT_KEY key;
     CHAR16 *buffer = 0;
-    UINTN bufferSize = 128;
-    UINTN index;
+    UINTN bufferSize = 256;
+    UINTN index = 0;
 
     while (1)
     {
@@ -100,6 +115,21 @@ CHAR16 *ReadLn()
     }
 
     return buffer;
+}
+
+INTN StrCmp(CHAR16 *string1, CHAR16 *string2)
+{
+    return UnicodeInterface->StriColl(UnicodeInterface, string1, string2);
+}
+
+void ToLower(CHAR16 *string)
+{
+    UnicodeInterface->StrLwr(UnicodeInterface, string);
+}
+
+void ToUpper(CHAR16 *string)
+{
+    UnicodeInterface->StrUpr(UnicodeInterface, string);
 }
 
 void WaitForKey()
