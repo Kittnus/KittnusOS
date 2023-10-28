@@ -22,12 +22,22 @@ void PrintLn(CHAR16 *string)
     ConOut->OutputString(ConOut, L"\r\n");
 }
 
+void SetColor(UINTN color)
+{
+    ConOut->SetAttribute(ConOut, color);
+}
+
+// TODO: Make better error handling
 #define EFI_CALL(function)            \
     do                                \
     {                                 \
         EFI_STATUS status = function; \
         if (EFI_ERROR(status))        \
+        {                             \
+            SetColor(EFI_RED);        \
             Print(L"Error");          \
+            SetColor(EFI_WHITE);      \
+        }                             \
     } while (0)
 
 void InitializeEFI(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
@@ -45,13 +55,8 @@ void InitializeEFI(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     RuntimeServices = systemTable->RuntimeServices;
 }
 
-void SetColor(UINTN color)
-{
-    EFI_CALL(ConOut->SetAttribute(ConOut, color));
-}
-
 void WaitForKey()
 {
     EFI_STATUS status;
-    BootServices->WaitForEvent(1, &ConIn->WaitForKey, &status);
+    EFI_CALL(BootServices->WaitForEvent(1, &ConIn->WaitForKey, &status));
 }
