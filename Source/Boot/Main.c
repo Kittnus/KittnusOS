@@ -3,7 +3,7 @@
 EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 {
     InitializeEFI(imageHandle, systemTable);
-    PrintLn(L"Welcome to Kittnus Bootloader...");
+    PrintLn(L"Welcome to Kittnus bootloader...");
 
     while (1)
     {
@@ -13,9 +13,9 @@ EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
         {
             PrintLn(L"Commands:");
             SetCursorColumn(1);
-            PrintLn(L"shutdown - shuts down the computer.");
-            PrintLn(L"restart - restarts the computer.");
-            PrintLn(L"reboot - reboots the computer.");
+            PrintLn(L"Shutdown - shuts down the computer.");
+            PrintLn(L"Restart - restarts the computer.");
+            PrintLn(L"Reboot - reboots the computer.");
             ResetCursorColumn();
         }
         else if (StrCmp(command, L"shutdown") == 0)
@@ -25,7 +25,7 @@ EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
         else if (StrCmp(command, L"reboot") == 0)
             Reboot();
         else
-            PrintLn(L"Unknown Command");
+            PrintLn(L"Unknown command");
     }
 
     EFI_PHYSICAL_ADDRESS physicalBuffer;

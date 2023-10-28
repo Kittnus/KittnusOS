@@ -110,11 +110,14 @@ CHAR16 *ReadLn()
             buffer[index] = L'\0';
             break;
         }
-        else if (key.UnicodeChar == L'\b' && index > 0)
+        else if (key.UnicodeChar == L'\b')
         {
+            if (index <= 0)
+                continue;
+
             index--;
             buffer[index] = L'\0';
-            Print(L"\b");
+            Print(L"\b \b");
         }
         else if (index < bufferSize - 1)
         {
