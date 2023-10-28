@@ -13,9 +13,9 @@ EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
         {
             PrintLn(L"Commands:");
             SetCursorColumn(1);
-            PrintLn(L"Shutdown - shuts down the computer.");
-            PrintLn(L"Restart - restarts the computer.");
-            PrintLn(L"Reboot - reboots the computer.");
+            PrintLn(L"Shutdown - Shuts down the computer.");
+            PrintLn(L"Restart - Restarts the computer.");
+            PrintLn(L"Reboot - Reboots the computer.");
             ResetCursorColumn();
         }
         else if (StrCmp(command, L"shutdown") == 0)
