@@ -20,8 +20,8 @@ $(INT_DIR)/%.o: $(SRC_DIR)/%.c | $(INT_DIR)
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OUT_DIR)/BOOTX64.efi: $(INT_DIR)/Boot/EFIMain.o | $(OUT_DIR)
-	$(CC) $(CFLAGS) -nostdlib -shared -Wl,-dll -Wl,--subsystem,10 -e EfiMain $^ -o $@
+$(OUT_DIR)/BOOTX64.efi: $(INT_DIR)/Boot/Main.o | $(OUT_DIR)
+	$(CC) $(CFLAGS) -nostdlib -shared -Wl,-dll -Wl,--subsystem,10 -e EFIMain $^ -o $@
 
 clean:
 	rm -rf $(OUT_DIR) $(INT_DIR)
