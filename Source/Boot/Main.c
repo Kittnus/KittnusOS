@@ -24,9 +24,6 @@ void ShowHelp()
         Print(commands[i].commandName);
         Print(L" - ");
         PrintLn(commands[i].commandDescription);
-
-        if (i < sizeof(commands) / sizeof(CommandInfo) - 1)
-            NewLine();
     }
 }
 
