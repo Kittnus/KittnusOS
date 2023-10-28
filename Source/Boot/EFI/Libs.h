@@ -119,7 +119,7 @@ CHAR16 *ReadLn()
 
 INTN StrCmp(CHAR16 *string1, CHAR16 *string2)
 {
-    return UnicodeInterface->StriColl(UnicodeInterface, string1, string2);
+    return UnicodeInterface->StrCmp(UnicodeInterface, string1, string2);
 }
 
 void ToLower(CHAR16 *string)
