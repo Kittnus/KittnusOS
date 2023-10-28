@@ -1,6 +1,11 @@
 {
     "files.associations": {
         "efi.h": "c",
-        "common.h": "c"
+        "common.h": "c",
+        "api.h": "c",
+        "types.h": "c",
+        "errors.h": "c",
+        "libs.h": "c",
+        "stdarg.h": "c"
     }
 }

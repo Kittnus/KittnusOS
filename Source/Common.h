@@ -1,8 +1,5 @@
 #pragma once
 
-#define TRUE 1
-#define FALSE 0
-
 typedef signed char INT8;
 typedef signed short INT16;
 typedef signed int INT32;

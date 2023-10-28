@@ -1,19 +1,9 @@
 #pragma once
 
-#include "Common.h"
-
-#define IN
-#define OUT
-#define OPTIONAL
-#define CONST const
+#include "Types.h"
+#include "Errors.h"
 
 #define EFIAPI __cdecl
-#define EFI_SUCCESS 0
-
-#define VOID void
-typedef UINT8 BOOLEAN;
-typedef UINT64 UINTN;
-typedef UINT16 CHAR16;
 
 typedef UINTN EFI_STATUS;
 
