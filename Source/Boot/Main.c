@@ -11,8 +11,6 @@ EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     ResetColor();
 
     WaitForKey();
-
-    PrintLn(L"Shutting down...");
     Shutdown();
 
     EFI_PHYSICAL_ADDRESS physicalBuffer;
