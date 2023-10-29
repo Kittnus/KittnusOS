@@ -129,11 +129,6 @@ void SetCursorColumn(UINTN column)
     SetCursorPosition(column, ConOut->Mode->CursorRow);
 }
 
-void ResetCursorColumn()
-{
-    SetCursorColumn(0);
-}
-
 void SetCursorRow(UINTN row)
 {
     SetCursorPosition(ConOut->Mode->CursorColumn, row);
