@@ -5,13 +5,8 @@
 #include "Config.h"
 #include "Shell.h"
 
-EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
+EFI_STATUS Boot()
 {
-    InitializeLibs(imageHandle, systemTable);
-
-    if (ShouldStartShell)
-        OpenShell();
-
     EFI_PHYSICAL_ADDRESS physicalBuffer;
     UINT64 allocSize = (1 + 64) * 1024 * 1024;
     UINT64 pages = allocSize / 4096;
@@ -78,4 +73,14 @@ EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     // EFI_CALL(fileHandle->Close(fileHandle));
 
     return EFI_SUCCESS;
+}
+
+EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
+{
+    InitializeLibs(imageHandle, systemTable);
+
+    if (ShouldStartShell)
+        OpenShell();
+
+    return Boot();
 }

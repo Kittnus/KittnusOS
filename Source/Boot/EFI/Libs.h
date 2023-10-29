@@ -59,6 +59,9 @@ void PrintIntLn(UINT64 number);
         }                             \
     } while (0)
 
+#define ALLOC(buffer, size) EFI_CALL(BootServices->AllocatePool(EfiBootServicesData, size, buffer));
+#define FREE(buffer) EFI_CALL(BootServices->FreePool(buffer));
+
 void LocateProtocol(EFI_GUID *protocol, void **interface)
 {
     EFI_CALL(BootServices->LocateProtocol(protocol, 0, interface));
@@ -83,6 +86,11 @@ void InitializeLibs(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     LocateProtocol(&SimpleFileSystemProtocolGuid, (void **)&FileSystem);
 }
 
+void ClearScreen()
+{
+    EFI_CALL(ConOut->ClearScreen(ConOut));
+}
+
 CHAR16 *IntToString(UINT64 number)
 {
     CHAR16 *buffer = 0;
@@ -95,7 +103,15 @@ CHAR16 *IntToString(UINT64 number)
         digits++;
     } while (temp != 0);
 
-    EFI_CALL(BootServices->AllocatePool(EfiBootServicesData, (digits + 1) * sizeof(CHAR16), (void **)&buffer));
+    ALLOC((void **)&buffer, (digits + 1) * sizeof(CHAR16));
+    if (!buffer)
+    {
+        SetColor(EFI_RED);
+        PrintLn(L"Failed to allocate memory for integer buffer");
+        ResetColor();
+        return 0;
+    }
+
     buffer[digits] = '\0';
     do
     {
@@ -111,6 +127,7 @@ void PrintInt(UINT64 number)
 {
     CHAR16 *buffer = IntToString(number);
     Print(buffer);
+    FREE(buffer);
 }
 
 void PrintIntLn(UINT64 number)
@@ -134,54 +151,13 @@ void SetCursorRow(UINTN row)
     SetCursorPosition(ConOut->Mode->CursorColumn, row);
 }
 
-CHAR16 *ReadLn()
+void Trim(CHAR16 *string)
 {
-    Print(L"> ");
+    if (!string)
+        return;
 
-    EFI_INPUT_KEY key;
-    CHAR16 *buffer = 0;
-    UINTN bufferSize = 256;
-    UINTN index = 0;
-
-    EFI_CALL(BootServices->AllocatePool(EfiBootServicesData, bufferSize * sizeof(CHAR16), (void **)&buffer));
-
-    while (1)
-    {
-        EFI_CALL(BootServices->WaitForEvent(1, &ConIn->WaitForKey, 0));
-        EFI_CALL(ConIn->ReadKeyStroke(ConIn, &key));
-
-        if (key.UnicodeChar == L'\r')
-        {
-            buffer[index] = L'\0';
-            break;
-        }
-        else if (key.UnicodeChar == L'\b')
-        {
-            if (index <= 0)
-                continue;
-
-            index--;
-            buffer[index] = L'\0';
-            Print(L"\b \b");
-        }
-        else if (key.UnicodeChar == L'\x7f')
-            index++;
-        else if (key.UnicodeChar == L'\t')
-        {
-            // TODO: Implement tab completion
-            continue;
-        }
-        else if (index < bufferSize - 1)
-        {
-            buffer[index] = key.UnicodeChar;
-            index++;
-            buffer[index] = L'\0';
-            Print(&key.UnicodeChar);
-        }
-    }
-
-    NewLine();
-    return buffer;
+    while (*string && *string == L' ')
+        string++;
 }
 
 INTN StrCmp(CHAR16 *string1, CHAR16 *string2)
@@ -199,9 +175,19 @@ void ToUpper(CHAR16 *string)
     UnicodeInterface->StrUpr(UnicodeInterface, string);
 }
 
+void ReadKeyStroke(EFI_INPUT_KEY *key)
+{
+    EFI_CALL(ConIn->ReadKeyStroke(ConIn, key));
+}
+
+void WaitForEvent(EFI_EVENT event)
+{
+    EFI_CALL(BootServices->WaitForEvent(1, &event, 0));
+}
+
 void WaitForKey()
 {
-    EFI_CALL(BootServices->WaitForEvent(1, &ConIn->WaitForKey, 0));
+    WaitForEvent(ConIn->WaitForKey);
 }
 
 void Reboot()
