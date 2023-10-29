@@ -26,8 +26,11 @@ const UINT64 CommandCount = sizeof(Commands) / sizeof(CommandInfo);
 
 BOOLEAN FindCommand(CHAR16 *name, CommandInfo **commandInfo)
 {
+    if (!name)
+        return FALSE;
+
     for (UINTN i = 0; i < CommandCount; i++)
-        if (StrCmp(name, Commands[i].name) == 0)
+        if (StrCmp(name, Commands[i].name) == 0 || StrCmp(name, Commands[i].alias) == 0)
         {
             *commandInfo = &Commands[i];
             return TRUE;
