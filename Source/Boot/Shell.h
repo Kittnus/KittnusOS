@@ -79,8 +79,6 @@ void TabComplete(CHAR16 *buffer)
 
 // TODO: Add command history
 // TODO: Add command editing
-// TODO: Add command completion
-// TODO: Add command aliases
 // TODO: Add command chaining
 CHAR16 *ReadInput()
 {
@@ -165,8 +163,14 @@ void ShowHelp()
     PrintLn(L"Commands:");
     for (UINTN i = 0; i < CommandCount; i++)
     {
-        SetCursorColumn(1);
+        Print(L"  ");
         Print(Commands[i].name);
+        if (Commands[i].alias)
+        {
+            Print(L" (");
+            Print(Commands[i].alias);
+            Print(L")");
+        }
         Print(L" - ");
         PrintLn(Commands[i].description);
     }
