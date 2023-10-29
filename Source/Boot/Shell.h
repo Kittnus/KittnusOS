@@ -24,19 +24,33 @@ CommandInfo Commands[] = {
 
 const UINT64 CommandCount = sizeof(Commands) / sizeof(CommandInfo);
 
+BOOLEAN FindCommand(CHAR16 *name, CommandInfo *commandInfo)
+{
+    for (UINTN i = 0; i < CommandCount; i++)
+        if (StrCmp(name, Commands[i].name) == 0)
+        {
+            commandInfo = &Commands[i];
+            return TRUE;
+        }
+
+    return FALSE;
+}
+
 void ExecuteCommand(CHAR16 *command)
 {
     StrTrim(command);
 
-    for (UINTN i = 0; i < CommandCount; i++)
-        if (StrCmp(command, Commands[i].name) == 0)
-        {
-            ((void (*)())Commands[i].handler)();
-            return;
-        }
+    CommandInfo commandInfo;
+    if (FindCommand(command, &commandInfo))
+    {
+        ((void (*)())commandInfo.handler)();
+        return;
+    }
 
+    SetColor(EFI_RED);
     Print(L"Unknown command: ");
     PrintLn(command);
+    ResetColor();
 }
 
 void TabComplete(CHAR16 *buffer)
