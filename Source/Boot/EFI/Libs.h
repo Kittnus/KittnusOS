@@ -25,36 +25,6 @@ void Print(CHAR16 *string)
     ConOut->OutputString(ConOut, string);
 }
 
-CHAR16 *IntToString(UINT64 number)
-{
-    CHAR16 *buffer = 0;
-    UINT64 temp = number;
-    UINT32 digits = 0;
-
-    do
-    {
-        temp /= 10;
-        digits++;
-    } while (temp != 0);
-
-    BootServices->AllocatePool(EfiBootServicesData, (digits + 1) * sizeof(CHAR16), (void **)&buffer);
-    buffer[digits] = '\0';
-    do
-    {
-        digits--;
-        buffer[digits] = (CHAR16)(L'0' + (number % 10));
-        number /= 10;
-    } while (number != 0);
-
-    return buffer;
-}
-
-void Print(UINT64 number)
-{
-    CHAR16 *buffer = IntToString(number);
-    Print(buffer);
-}
-
 void NewLine()
 {
     Print(L"\r\n");
@@ -63,12 +33,6 @@ void NewLine()
 void PrintLn(CHAR16 *string)
 {
     Print(string);
-    NewLine();
-}
-
-void PrintLn(UINT64 number)
-{
-    Print(number);
     NewLine();
 }
 
@@ -82,6 +46,8 @@ void ResetColor()
     SetColor(EFI_LIGHTGRAY);
 }
 
+void PrintIntLn(UINT64 number);
+
 #define EFI_CALL(function)            \
     do                                \
     {                                 \
@@ -90,7 +56,7 @@ void ResetColor()
         {                             \
             SetColor(EFI_RED);        \
             Print(L"Error: ");        \
-            PrintLn(status);          \
+            PrintIntLn(status);       \
             ResetColor();             \
         }                             \
     } while (0)
@@ -117,6 +83,42 @@ void InitializeEFI(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     LocateProtocol(&UnicodeInterfaceGuid, (void **)&UnicodeInterface);
 
     LocateProtocol(&SimpleFileSystemProtocolGuid, (void **)&FileSystem);
+}
+
+CHAR16 *IntToString(UINT64 number)
+{
+    CHAR16 *buffer = 0;
+    UINT64 temp = number;
+    UINT32 digits = 0;
+
+    do
+    {
+        temp /= 10;
+        digits++;
+    } while (temp != 0);
+
+    EFI_CALL(BootServices->AllocatePool(EfiBootServicesData, (digits + 1) * sizeof(CHAR16), (void **)&buffer));
+    buffer[digits] = '\0';
+    do
+    {
+        digits--;
+        buffer[digits] = (CHAR16)(L'0' + (number % 10));
+        number /= 10;
+    } while (number != 0);
+
+    return buffer;
+}
+
+void PrintInt(UINT64 number)
+{
+    CHAR16 *buffer = IntToString(number);
+    Print(buffer);
+}
+
+void PrintIntLn(UINT64 number)
+{
+    PrintInt(number);
+    NewLine();
 }
 
 void SetCursorPosition(UINTN column, UINTN row)
@@ -148,6 +150,8 @@ CHAR16 *ReadLn()
     UINTN bufferSize = 256;
     UINTN index = 0;
 
+    EFI_CALL(BootServices->AllocatePool(EfiBootServicesData, bufferSize * sizeof(CHAR16), (void **)&buffer));
+
     while (1)
     {
         EFI_CALL(BootServices->WaitForEvent(1, &ConIn->WaitForKey, 0));
@@ -166,6 +170,13 @@ CHAR16 *ReadLn()
             index--;
             buffer[index] = L'\0';
             Print(L"\b \b");
+        }
+        else if (key.UnicodeChar == L'\x7f')
+            index++;
+        else if (key.UnicodeChar == L'\t')
+        {
+            // TODO: Implement tab completion
+            continue;
         }
         else if (index < bufferSize - 1)
         {

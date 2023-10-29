@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Types.h"
+
 #define EFI_ERROR(a) (((INTN)a) < 0)
 
 #define EFIERR(a) (0x80000000 | a)

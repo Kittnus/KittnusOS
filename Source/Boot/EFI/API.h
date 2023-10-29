@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Types.h"
 #include "Errors.h"
 
 #define EFIAPI __cdecl
@@ -109,9 +108,9 @@ typedef EFI_STATUS(EFIAPI *EFI_FILE_FLUSH_EX)(
     IN EFI_FILE_PROTOCOL *This,
     IN OUT EFI_FILE_IO_TOKEN *Token);
 
-#define EFI_FILE_SYSTEM_INFO_ID                                                    \
-    {                                                                              \
-        0x09576e93, 0x6d3f, 0x11d2, 0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b \
+#define EFI_FILE_SYSTEM_INFO_ID                                                        \
+    {                                                                                  \
+        0x09576e93, 0x6d3f, 0x11d2, { 0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b } \
     }
 
 typedef struct
@@ -123,35 +122,6 @@ typedef struct
     UINT32 BlockSize;
     CHAR16 VolumeLabel[];
 } EFI_FILE_SYSTEM_INFO;
-
-#define EFI_FILE_INFO_ID                                                           \
-    {                                                                              \
-        0x09576e92, 0x6d3f, 0x11d2, { 0x8e39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b } \
-    }
-
-typedef struct
-{
-    UINT64 Size;
-    UINT64 FileSize;
-    UINT64 PhysicalSize;
-    EFI_TIME CreateTime;
-    EFI_TIME LastAccessTime;
-    EFI_TIME ModificationTime;
-    UINT64 Attribute;
-    CHAR16 FileName[];
-} EFI_FILE_INFO;
-
-//******************************************
-// File Attribute Bits
-//******************************************
-
-#define EFI_FILE_READ_ONLY 0x0000000000000001
-#define EFI_FILE_HIDDEN 0x0000000000000002
-#define EFI_FILE_SYSTEM 0x0000000000000004
-#define EFI_FILE_RESERVED 0x0000000000000008
-#define EFI_FILE_DIRECTORY 0x0000000000000010
-#define EFI_FILE_ARCHIVE 0x0000000000000020
-#define EFI_FILE_VALID_ATTR 0x0000000000000037
 
 #define EFI_FILE_PROTOCOL_REVISION 0x00010000
 #define EFI_FILE_PROTOCOL_REVISION2 0x00020000
@@ -437,6 +407,35 @@ typedef EFI_STATUS(EFIAPI *EFI_GET_WAKEUP_TIME)(
 typedef EFI_STATUS(EFIAPI *EFI_SET_WAKEUP_TIME)(
     IN BOOLEAN Enable,
     IN EFI_TIME *Time OPTIONAL);
+
+#define EFI_FILE_INFO_ID                                                               \
+    {                                                                                  \
+        0x09576e92, 0x6d3f, 0x11d2, { 0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b } \
+    }
+
+typedef struct
+{
+    UINT64 Size;
+    UINT64 FileSize;
+    UINT64 PhysicalSize;
+    EFI_TIME CreateTime;
+    EFI_TIME LastAccessTime;
+    EFI_TIME ModificationTime;
+    UINT64 Attribute;
+    CHAR16 FileName[];
+} EFI_FILE_INFO;
+
+//******************************************
+// File Attribute Bits
+//******************************************
+
+#define EFI_FILE_READ_ONLY 0x0000000000000001
+#define EFI_FILE_HIDDEN 0x0000000000000002
+#define EFI_FILE_SYSTEM 0x0000000000000004
+#define EFI_FILE_RESERVED 0x0000000000000008
+#define EFI_FILE_DIRECTORY 0x0000000000000010
+#define EFI_FILE_ARCHIVE 0x0000000000000020
+#define EFI_FILE_VALID_ATTR 0x0000000000000037
 
 //******************************************************
 // EFI_VIRTUAL_ADDRESS
