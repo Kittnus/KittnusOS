@@ -5,6 +5,7 @@ BOOLEAN IsInShell = FALSE;
 typedef struct
 {
     CHAR16 *name;
+    CHAR16 *alias;
     CHAR16 *description;
     void *handler;
 } CommandInfo;
@@ -14,18 +15,18 @@ void ExitShell();
 
 // TODO: Add file system support
 CommandInfo Commands[] = {
-    {L"Help", L"Show available commands", ShowHelp},
-    {L"Clear", L"Clear the screen", ClearScreen},
-    {L"Boot", L"Boot the operating system", ExitShell},
-    {L"Shutdown", L"Shut down the machine", Shutdown},
-    {L"Restart", L"Restart the machine", Restart},
-    {L"Reboot", L"Reboot the machine", Reboot}};
+    {L"Help", L"?", L"Show available commands", ShowHelp},
+    {L"Clear", L"Cls", L"Clear the screen", ClearScreen},
+    {L"Boot", L"Start", L"Boot the operating system", ExitShell},
+    {L"Shutdown", L"Exit", L"Shut down the machine", Shutdown},
+    {L"Restart", 0, L"Restart the machine", Restart},
+    {L"Reboot", 0, L"Reboot the machine", Reboot}};
 
 const UINT64 CommandCount = sizeof(Commands) / sizeof(CommandInfo);
 
 void ExecuteCommand(CHAR16 *command)
 {
-    Trim(command);
+    StrTrim(command);
 
     for (UINTN i = 0; i < CommandCount; i++)
         if (StrCmp(command, Commands[i].name) == 0)
@@ -50,7 +51,7 @@ void TabComplete(CHAR16 *buffer)
     for (UINTN i = 0; i < CommandCount; i++)
         if (StrCmp(buffer, Commands[i].name) == 0)
         {
-            buffer = Commands[i].name;
+            StrCpy(buffer, Commands[i].name);
             Print(buffer);
             break;
         }

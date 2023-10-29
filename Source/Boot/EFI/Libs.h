@@ -151,13 +151,38 @@ void SetCursorRow(UINTN row)
     SetCursorPosition(ConOut->Mode->CursorColumn, row);
 }
 
-void Trim(CHAR16 *string)
+void StrCpy(CHAR16 *source, CHAR16 *destination)
 {
-    if (!string)
+    while (*source)
+        *destination++ = *source++;
+    *destination = L'\0';
+}
+
+UINTN StrLen(CHAR16 *string)
+{
+    UINTN length = 0;
+    while (*string++)
+        length++;
+    return length;
+}
+
+void StrTrim(CHAR16 *string)
+{
+    UINTN length = StrLen(string);
+    if (!length)
         return;
 
-    while (*string && *string == L' ')
-        string++;
+    UINTN start = 0;
+    UINTN end = length - 1;
+
+    while (string[start] == L' ' || string[start] == L'\t')
+        start++;
+
+    while (string[end] == L' ' || string[end] == L'\t')
+        end--;
+
+    StrCpy(string + start, string);
+    string[end - start + 1] = L'\0';
 }
 
 INTN StrCmp(CHAR16 *string1, CHAR16 *string2)
