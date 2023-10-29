@@ -6,6 +6,7 @@
         "types.h": "c",
         "errors.h": "c",
         "libs.h": "c",
-        "shell.h": "c"
+        "shell.h": "c",
+        "config.h": "c"
     }
 }

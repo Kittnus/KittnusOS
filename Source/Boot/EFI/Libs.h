@@ -1,7 +1,5 @@
 #pragma once
 
-#include "API.h"
-
 EFI_HANDLE ImageHandle;
 EFI_SYSTEM_TABLE *SystemTable;
 
@@ -66,7 +64,7 @@ void LocateProtocol(EFI_GUID *protocol, void **interface)
     EFI_CALL(BootServices->LocateProtocol(protocol, 0, interface));
 }
 
-void InitializeEFI(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
+void InitializeLibs(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 {
     ImageHandle = imageHandle;
     SystemTable = systemTable;

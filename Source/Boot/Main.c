@@ -1,11 +1,15 @@
+#include "EFI/Types.h"
+#include "EFI/Errors.h"
+#include "EFI/API.h"
+#include "EFI/Libs.h"
+#include "Config.h"
 #include "Shell.h"
 
 EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 {
-    InitializeEFI(imageHandle, systemTable);
-    PrintLn(L"Welcome to Kittnus bootloader...");
+    InitializeLibs(imageHandle, systemTable);
 
-    if (1) // if should start shell
+    if (ShouldStartShell)
         OpenShell();
 
     EFI_PHYSICAL_ADDRESS physicalBuffer;

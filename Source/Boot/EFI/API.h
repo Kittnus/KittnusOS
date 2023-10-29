@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Errors.h"
-
 #define EFIAPI __cdecl
 
 typedef UINTN EFI_STATUS;

@@ -1,6 +1,6 @@
-#include "EFI/Libs.h"
+#pragma once
 
-BOOLEAN IsInShell = TRUE;
+BOOLEAN IsInShell = FALSE;
 
 typedef struct
 {
@@ -34,6 +34,8 @@ void ExecuteCommand(CHAR16 *command)
 
 void OpenShell()
 {
+    PrintLn(L"Welcome to Kittnus shell!");
+    IsInShell = TRUE;
     while (IsInShell)
     {
         CHAR16 *command = ReadLn();
