@@ -24,12 +24,12 @@ CommandInfo Commands[] = {
 
 const UINT64 CommandCount = sizeof(Commands) / sizeof(CommandInfo);
 
-BOOLEAN FindCommand(CHAR16 *name, CommandInfo *commandInfo)
+BOOLEAN FindCommand(CHAR16 *name, CommandInfo **commandInfo)
 {
     for (UINTN i = 0; i < CommandCount; i++)
         if (StrCmp(name, Commands[i].name) == 0)
         {
-            commandInfo = &Commands[i];
+            *commandInfo = &Commands[i];
             return TRUE;
         }
 
@@ -40,10 +40,13 @@ void ExecuteCommand(CHAR16 *command)
 {
     StrTrim(command);
 
-    CommandInfo commandInfo;
+    if (!command)
+        return;
+
+    CommandInfo *commandInfo;
     if (FindCommand(command, &commandInfo))
     {
-        ((void (*)())commandInfo.handler)();
+        ((void (*)())commandInfo->handler)();
         return;
     }
 
