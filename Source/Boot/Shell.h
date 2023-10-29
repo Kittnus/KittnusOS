@@ -163,7 +163,6 @@ void ShowHelp()
     PrintLn(L"Commands:");
     for (UINTN i = 0; i < CommandCount; i++)
     {
-        Print(L"  ");
         Print(Commands[i].name);
         if (Commands[i].alias)
         {
