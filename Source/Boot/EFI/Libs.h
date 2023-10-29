@@ -14,9 +14,45 @@ EFI_RUNTIME_SERVICES *RuntimeServices;
 EFI_GUID UnicodeInterfaceGuid = EFI_UNICODE_COLLATION_PROTOCOL2_GUID;
 EFI_UNICODE_COLLATION_PROTOCOL *UnicodeInterface;
 
+EFI_GUID SimpleFileSystemProtocolGuid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
+EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *FileSystem;
+
+EFI_GUID FileInfoId = EFI_FILE_INFO_ID;
+EFI_GUID FileSystemInfoId = EFI_FILE_SYSTEM_INFO_ID;
+
 void Print(CHAR16 *string)
 {
     ConOut->OutputString(ConOut, string);
+}
+
+CHAR16 *IntToString(UINT64 number)
+{
+    CHAR16 *buffer = 0;
+    UINT64 temp = number;
+    UINT32 digits = 0;
+
+    do
+    {
+        temp /= 10;
+        digits++;
+    } while (temp != 0);
+
+    BootServices->AllocatePool(EfiBootServicesData, (digits + 1) * sizeof(CHAR16), (void **)&buffer);
+    buffer[digits] = '\0';
+    do
+    {
+        digits--;
+        buffer[digits] = (CHAR16)(L'0' + (number % 10));
+        number /= 10;
+    } while (number != 0);
+
+    return buffer;
+}
+
+void Print(UINT64 number)
+{
+    CHAR16 *buffer = IntToString(number);
+    Print(buffer);
 }
 
 void NewLine()
@@ -30,6 +66,12 @@ void PrintLn(CHAR16 *string)
     NewLine();
 }
 
+void PrintLn(UINT64 number)
+{
+    Print(number);
+    NewLine();
+}
+
 void SetColor(UINTN color)
 {
     ConOut->SetAttribute(ConOut, color);
@@ -40,7 +82,6 @@ void ResetColor()
     SetColor(EFI_LIGHTGRAY);
 }
 
-// TODO: Make better error handling
 #define EFI_CALL(function)            \
     do                                \
     {                                 \
@@ -48,10 +89,16 @@ void ResetColor()
         if (EFI_ERROR(status))        \
         {                             \
             SetColor(EFI_RED);        \
-            Print(L"Error");          \
+            Print(L"Error: ");        \
+            PrintLn(status);          \
             ResetColor();             \
         }                             \
     } while (0)
+
+void LocateProtocol(EFI_GUID *protocol, void **interface)
+{
+    EFI_CALL(BootServices->LocateProtocol(protocol, 0, interface));
+}
 
 void InitializeEFI(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 {
@@ -67,7 +114,9 @@ void InitializeEFI(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     BootServices = systemTable->BootServices;
     RuntimeServices = systemTable->RuntimeServices;
 
-    EFI_CALL(BootServices->LocateProtocol(&UnicodeInterfaceGuid, 0, (void **)&UnicodeInterface));
+    LocateProtocol(&UnicodeInterfaceGuid, (void **)&UnicodeInterface);
+
+    LocateProtocol(&SimpleFileSystemProtocolGuid, (void **)&FileSystem);
 }
 
 void SetCursorPosition(UINTN column, UINTN row)
