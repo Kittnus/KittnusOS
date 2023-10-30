@@ -13,6 +13,7 @@
 
 #include "Shell.h"
 
+// TODO: Clean up, make FSLib and MemLib methods and move to separate file
 EFI_STATUS Boot()
 {
     EFI_PHYSICAL_ADDRESS physicalBuffer;
