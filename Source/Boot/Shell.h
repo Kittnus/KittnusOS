@@ -15,12 +15,12 @@ void ExitShell();
 
 // TODO: Add file system support
 CommandInfo Commands[] = {
-    {L"Help", L"?", L"Show available commands", ShowHelp},
-    {L"Clear", L"Cls", L"Clear the screen", ClearScreen},
-    {L"Boot", L"Start", L"Boot the operating system", ExitShell},
-    {L"Shutdown", L"Exit", L"Shut down the machine", Shutdown},
-    {L"Restart", 0, L"Restart the machine", Restart},
-    {L"Reboot", 0, L"Reboot the machine", Reboot}};
+    {L"help", L"?", L"Show available commands", ShowHelp},
+    {L"clear", L"cls", L"Clear the screen", ClearScreen},
+    {L"boot", L"start", L"Boot the operating system", ExitShell},
+    {L"shutdown", L"exit", L"Shut down the machine", Shutdown},
+    {L"restart", 0, L"Restart the machine", Restart},
+    {L"reboot", 0, L"Reboot the machine", Reboot}};
 
 const UINT64 CommandCount = sizeof(Commands) / sizeof(CommandInfo);
 
@@ -59,21 +59,19 @@ void ExecuteCommand(CHAR16 *command)
     ResetColor();
 }
 
+// TODO: Add file system tabbing
 void TabComplete(CHAR16 *buffer)
 {
-    // TODO: Add pretabbing (tabbing before typing anything and when there are multiple options)
-    // TODO: Add tabbing after typing a few characters
-    // TODO: Add file system tabbing
-
+    // TODO: Add pretabbing (tabbing before typing anything and when the buffer is empty) to show file system contents
     if (!buffer)
         return;
 
+    // TODO: Add tabbing after typing a few characters
     for (UINTN i = 0; i < CommandCount; i++)
-        if (StrCmp(buffer, Commands[i].name) == 0)
+        if (StrCmp(buffer, Commands[i].name) == 0 || StrCmp(buffer, Commands[i].alias) == 0)
         {
-            StrCpy(buffer, Commands[i].name);
-            Print(buffer);
-            break;
+            PrintLn(Commands[i].name);
+            return;
         }
 }
 
@@ -141,9 +139,13 @@ CHAR16 *ReadInput()
 
 void OpenShell()
 {
+    Print(L"Welcome to ");
     SetColor(EFI_WHITE);
-    PrintLn(L"Welcome to Kittnus shell!");
+    Print(L"Kittnus Shell");
     ResetColor();
+    PrintLn(L"!");
+
+    PrintLn(L"Type \"Help\" to see available commands");
     NewLine();
 
     IsInShell = TRUE;

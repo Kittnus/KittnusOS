@@ -151,7 +151,7 @@ void SetCursorRow(UINTN row)
     SetCursorPosition(ConOut->Mode->CursorColumn, row);
 }
 
-void StrCpy(CHAR16 *source, CHAR16 *destination)
+void StrCpy(CHAR16 *destination, CHAR16 *source)
 {
     while (*source)
         *destination++ = *source++;
@@ -164,6 +164,25 @@ UINTN StrLen(CHAR16 *string)
     while (*string++)
         length++;
     return length;
+}
+
+void StrCat(CHAR16 *destination, CHAR16 *source)
+{
+    UINTN length = StrLen(destination);
+    StrCpy(destination + length, source);
+}
+
+void StrSlice(CHAR16 *string, UINTN start)
+{
+    UINTN length = StrLen(string);
+
+    if (start >= length)
+    {
+        string[0] = L'\0';
+        return;
+    }
+    
+    StrCpy(string, string + start);
 }
 
 void StrTrim(CHAR16 *string)
@@ -181,7 +200,7 @@ void StrTrim(CHAR16 *string)
     while (string[end] == L' ' || string[end] == L'\t')
         end--;
 
-    StrCpy(string + start, string);
+    StrCpy(string, string + start);
     string[end - start + 1] = L'\0';
 }
 
