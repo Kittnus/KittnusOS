@@ -87,7 +87,7 @@ EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 {
     InitializeLibs(imageHandle, systemTable);
 
-    if (ShouldStartShell)
+    if (ShouldStartInShell)
         OpenShell();
 
     return Boot();

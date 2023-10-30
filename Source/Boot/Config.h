@@ -1,3 +1,3 @@
 #pragma once
 
-const BOOLEAN ShouldStartShell = TRUE;
+const BOOLEAN ShouldStartInShell = TRUE;
