@@ -72,41 +72,29 @@ void TabComplete(CHAR16 *buffer)
     BOOLEAN isCheckingAlias = FALSE;
     for (UINTN i = 0; i < CommandCount; i++)
     {
-        CHAR16 *name = (isCheckingAlias ? Commands[i].name : Commands[i].alias);
-        if (!name)
+        CHAR16 *nameToCheck = (isCheckingAlias ? Commands[i].name : Commands[i].alias);
+        if (!nameToCheck)
             continue;
 
-        UINTN nameLength = StrLen(name);
-        CHAR16 *nameSliced = 0;
-        ALLOC((void **)&nameSliced, (nameLength + 1) * sizeof(CHAR16));
-        if (!nameSliced)
-        {
-            SetColor(EFI_RED);
-            PrintLn(L"Failed to allocate memory for command name buffer");
-            ResetColor();
-            return;
-        }
+        UINTN nameLength = StrLen(nameToCheck);
 
-        StrCpy(nameSliced, name);
-        StrSlice(nameSliced, bufferLength);
+        CHAR16 *matchingPart = 0;
+        ALLOC((void **)&matchingPart, (nameLength + 1) * sizeof(CHAR16));
 
-        if (StrCmp(buffer, nameSliced) == 0)
+        StrCpy(matchingPart, nameToCheck);
+        StrSlice(matchingPart, bufferLength);
+
+        if (StrCmp(buffer, matchingPart) == 0)
         {
-            StrCpy(buffer, name);
+            StrCpy(buffer, nameToCheck);
             UINTN bufferLength = StrLen(buffer);
             CHAR16 *commandComplete = 0;
             ALLOC((void **)&commandComplete, (nameLength - bufferLength + 1) * sizeof(CHAR16));
-            if (!commandComplete)
-            {
-                SetColor(EFI_RED);
-                PrintLn(L"Failed to allocate memory for command completion buffer");
-                ResetColor();
-                return;
-            }
 
-            StrCpy(commandComplete, name);
+            StrCpy(commandComplete, nameToCheck);
             StrSlice(commandComplete, bufferLength);
             Print(commandComplete);
+            FREE(commandComplete);
             return;
         }
 
@@ -116,7 +104,7 @@ void TabComplete(CHAR16 *buffer)
             i = 0;
         }
 
-        FREE(nameSliced);
+        FREE(matchingPart);
     }
 }
 
@@ -134,13 +122,6 @@ CHAR16 *ReadInput()
     const UINTN bufferSize = 256;
 
     ALLOC((void **)&buffer, bufferSize * sizeof(CHAR16));
-    if (!buffer)
-    {
-        SetColor(EFI_RED);
-        PrintLn(L"Failed to allocate memory for command buffer");
-        ResetColor();
-        return 0;
-    }
 
     UINTN index = 0;
     while (TRUE)

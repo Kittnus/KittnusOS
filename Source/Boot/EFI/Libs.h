@@ -46,20 +46,35 @@ void ResetColor()
 
 void PrintIntLn(UINT64 number);
 
-#define EFI_CALL(function)            \
-    do                                \
-    {                                 \
-        EFI_STATUS status = function; \
-        if (EFI_ERROR(status))        \
-        {                             \
-            SetColor(EFI_RED);        \
-            Print(L"Error: ");        \
-            PrintIntLn(status);       \
-            ResetColor();             \
-        }                             \
+#define WIDEN(x) L##x
+
+#define EFI_CALL(function)             \
+    do                                 \
+    {                                  \
+        EFI_STATUS status = function;  \
+        if (EFI_ERROR(status))         \
+        {                              \
+            SetColor(EFI_RED);         \
+            Print(L"Error during \""); \
+            Print(WIDEN(#function));   \
+            Print(L"\" (");            \
+            PrintInt(status);          \
+            Print(L")");               \
+            ResetColor();              \
+        }                              \
     } while (0)
 
-#define ALLOC(buffer, size) EFI_CALL(BootServices->AllocatePool(EfiBootServicesData, size, buffer));
+#define ALLOC(buffer, size)                                                  \
+    EFI_CALL(BootServices->AllocatePool(EfiBootServicesData, size, buffer)); \
+    if (!*buffer)                                                            \
+    {                                                                        \
+        SetColor(EFI_RED);                                                   \
+        Print(L"Failed to allocate memory for: ");                           \
+        PrintLn(WIDEN(#buffer));                                             \
+        ResetColor();                                                        \
+        return;                                                              \
+    }
+
 #define FREE(buffer) EFI_CALL(BootServices->FreePool(buffer));
 
 void LocateProtocol(EFI_GUID *protocol, void **interface)
@@ -104,13 +119,6 @@ CHAR16 *IntToString(UINT64 number)
     } while (temp != 0);
 
     ALLOC((void **)&buffer, (digits + 1) * sizeof(CHAR16));
-    if (!buffer)
-    {
-        SetColor(EFI_RED);
-        PrintLn(L"Failed to allocate memory for integer buffer");
-        ResetColor();
-        return 0;
-    }
 
     buffer[digits] = '\0';
     do
@@ -181,7 +189,7 @@ void StrSlice(CHAR16 *string, UINTN start)
         string[0] = L'\0';
         return;
     }
-    
+
     StrCpy(string, string + start);
 }
 
