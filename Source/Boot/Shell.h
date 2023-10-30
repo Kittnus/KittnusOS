@@ -62,17 +62,62 @@ void ExecuteCommand(CHAR16 *command)
 // TODO: Add file system tabbing
 void TabComplete(CHAR16 *buffer)
 {
+    UINTN bufferLength = StrLen(buffer);
+
     // TODO: Add pretabbing (tabbing before typing anything and when the buffer is empty) to show file system contents
-    if (!buffer)
+    if (bufferLength <= 0)
         return;
 
-    // TODO: Add tabbing after typing a few characters
+    // TODO: Add multiple option selection when similar commands are found
+    BOOLEAN isCheckingAlias = FALSE;
     for (UINTN i = 0; i < CommandCount; i++)
-        if (StrCmp(buffer, Commands[i].name) == 0 || StrCmp(buffer, Commands[i].alias) == 0)
+    {
+        CHAR16 *name = (isCheckingAlias ? Commands[i].name : Commands[i].alias);
+        if (!name)
+            continue;
+
+        UINTN nameLength = StrLen(name);
+        CHAR16 *nameSliced = 0;
+        ALLOC((void **)&nameSliced, (nameLength + 1) * sizeof(CHAR16));
+        if (!nameSliced)
         {
-            PrintLn(Commands[i].name);
+            SetColor(EFI_RED);
+            PrintLn(L"Failed to allocate memory for command name buffer");
+            ResetColor();
             return;
         }
+
+        StrCpy(nameSliced, name);
+        StrSlice(nameSliced, bufferLength);
+
+        if (StrCmp(buffer, nameSliced) == 0)
+        {
+            StrCpy(buffer, name);
+            UINTN bufferLength = StrLen(buffer);
+            CHAR16 *commandComplete = 0;
+            ALLOC((void **)&commandComplete, (nameLength - bufferLength + 1) * sizeof(CHAR16));
+            if (!commandComplete)
+            {
+                SetColor(EFI_RED);
+                PrintLn(L"Failed to allocate memory for command completion buffer");
+                ResetColor();
+                return;
+            }
+
+            StrCpy(commandComplete, name);
+            StrSlice(commandComplete, bufferLength);
+            Print(commandComplete);
+            return;
+        }
+
+        if (i == CommandCount - 1)
+        {
+            isCheckingAlias = TRUE;
+            i = 0;
+        }
+
+        FREE(nameSliced);
+    }
 }
 
 // TODO: Add command history
