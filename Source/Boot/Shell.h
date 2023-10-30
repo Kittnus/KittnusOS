@@ -168,9 +168,12 @@ CHAR16 *ReadInput()
 void OpenShell()
 {
     Print(L"Welcome to ");
-    SetColor(EFI_WHITE);
+    SetColor(EFI_LIGHTCYAN);
     Print(L"Kittnus Shell");
     ResetColor();
+    Print(L" (");
+    Print(GetVersionString());
+    Print(L")");
     PrintLn(L"!");
 
     PrintLn(L"Type \"Help\" to see available commands");

@@ -63,6 +63,20 @@ void InitializeLibs(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     LocateProtocol(&SimpleFileSystemProtocolGuid, (void **)&FileSystem);
 }
 
+CHAR16 *GetVersionString()
+{
+    CHAR16 *version = 0;
+    ALLOC((void **)&version, (18 + 1) * sizeof(CHAR16));
+
+    StrCat(version, IntToString(VERSION_MAJOR));
+    StrCat(version, L".");
+    StrCat(version, IntToString(VERSION_MINOR));
+    StrCat(version, L".");
+    StrCat(version, IntToString(VERSION_PATCH));
+
+    return version;
+}
+
 void Print(CHAR16 *string)
 {
     ConOut->OutputString(ConOut, string);
