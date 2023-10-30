@@ -9,22 +9,22 @@ void PrintInt(UINT64 number);
 
 #define WIDEN(x) L##x
 
-#define EFI_CALL(function)                                            \
-    do                                                                \
-    {                                                                 \
-        EFI_STATUS status = function;                                 \
-        if (EFI_ERROR(status))                                        \
-        {                                                             \
-            SetColor(EFI_RED);                                        \
-            Print(L"The following error occured while executing \""); \
-            Print(WIDEN(#function));                                  \
-            Print(L"\": \"");                                         \
-            Print(GetErrorString(status));                            \
-            Print(L"\" (");                                           \
-            PrintInt(status);                                         \
-            Print(L")");                                              \
-            ResetColor();                                             \
-        }                                                             \
+#define EFI_CALL(function)                          \
+    do                                              \
+    {                                               \
+        EFI_STATUS status = function;               \
+        if (EFI_ERROR(status))                      \
+        {                                           \
+            SetColor(EFI_RED);                      \
+            Print(L"Error occurred in function: "); \
+            PrintLn(WIDEN(#function));              \
+            Print(L"Error message: ");              \
+            Print(GetErrorString(status));          \
+            Print(L" (");                           \
+            PrintInt(status - ERRBASE);             \
+            PrintLn(L")");                          \
+            ResetColor();                           \
+        }                                           \
     } while (0)
 
 #define ALLOC(buffer, size)                                                  \
