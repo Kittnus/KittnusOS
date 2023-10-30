@@ -191,6 +191,7 @@ void ShowHelp()
     PrintLn(L"Commands:");
     for (UINTN i = 0; i < CommandCount; i++)
     {
+        SetCursorColumn(1);
         Print(Commands[i].name);
         if (Commands[i].alias)
         {
