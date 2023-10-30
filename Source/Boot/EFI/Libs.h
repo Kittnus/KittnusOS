@@ -18,33 +18,12 @@ EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *FileSystem;
 EFI_GUID FileInfoId = EFI_FILE_INFO_ID;
 EFI_GUID FileSystemInfoId = EFI_FILE_SYSTEM_INFO_ID;
 
-void Print(CHAR16 *string)
-{
-    ConOut->OutputString(ConOut, string);
-}
-
-void NewLine()
-{
-    Print(L"\r\n");
-}
-
-void PrintLn(CHAR16 *string)
-{
-    Print(string);
-    NewLine();
-}
-
-void SetColor(UINTN color)
-{
-    ConOut->SetAttribute(ConOut, color);
-}
-
-void ResetColor()
-{
-    SetColor(EFI_LIGHTGRAY);
-}
-
-void PrintIntLn(UINT64 number);
+void Print(CHAR16 *string);
+void NewLine();
+void PrintLn(CHAR16 *string);
+void SetColor(UINTN color);
+void ResetColor();
+void PrintInt(UINT64 number);
 
 #define WIDEN(x) L##x
 
@@ -72,7 +51,6 @@ void PrintIntLn(UINT64 number);
         Print(L"Failed to allocate memory for: ");                           \
         PrintLn(WIDEN(#buffer));                                             \
         ResetColor();                                                        \
-        return;                                                              \
     }
 
 #define FREE(buffer) EFI_CALL(BootServices->FreePool(buffer));
@@ -101,9 +79,20 @@ void InitializeLibs(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     LocateProtocol(&SimpleFileSystemProtocolGuid, (void **)&FileSystem);
 }
 
-void ClearScreen()
+void Print(CHAR16 *string)
 {
-    EFI_CALL(ConOut->ClearScreen(ConOut));
+    ConOut->OutputString(ConOut, string);
+}
+
+void NewLine()
+{
+    Print(L"\r\n");
+}
+
+void PrintLn(CHAR16 *string)
+{
+    Print(string);
+    NewLine();
 }
 
 CHAR16 *IntToString(UINT64 number)
@@ -142,6 +131,21 @@ void PrintIntLn(UINT64 number)
 {
     PrintInt(number);
     NewLine();
+}
+
+void SetColor(UINTN color)
+{
+    ConOut->SetAttribute(ConOut, color);
+}
+
+void ResetColor()
+{
+    SetColor(EFI_LIGHTGRAY);
+}
+
+void ClearScreen()
+{
+    EFI_CALL(ConOut->ClearScreen(ConOut));
 }
 
 void SetCursorPosition(UINTN column, UINTN row)
