@@ -63,17 +63,9 @@ void InitializeLibs(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
     LocateProtocol(&SimpleFileSystemProtocolGuid, (void **)&FileSystem);
 }
 
-void PrintPrompt();
-
 void Print(CHAR16 *string)
 {
-    if (IsInShell)
-        NewLine();
-
     ConOut->OutputString(ConOut, string);
-
-    if (IsInShell)
-        PrintPrompt();
 }
 
 void NewLine()
