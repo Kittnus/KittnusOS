@@ -1,8 +1,11 @@
 #include "EFI/Types.h"
 #include "EFI/Errors.h"
 #include "EFI/API.h"
-#include "EFI/Libs.h"
+
+#include "Globals.h"
 #include "Config.h"
+
+#include "EFI/Libs.h"
 #include "Shell.h"
 
 EFI_STATUS Boot()

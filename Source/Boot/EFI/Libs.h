@@ -1,23 +1,5 @@
 #pragma once
 
-EFI_HANDLE ImageHandle;
-EFI_SYSTEM_TABLE *SystemTable;
-
-EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *ConOut;
-EFI_SIMPLE_TEXT_INPUT_PROTOCOL *ConIn;
-
-EFI_BOOT_SERVICES *BootServices;
-EFI_RUNTIME_SERVICES *RuntimeServices;
-
-EFI_GUID UnicodeInterfaceGuid = EFI_UNICODE_COLLATION_PROTOCOL2_GUID;
-EFI_UNICODE_COLLATION_PROTOCOL *UnicodeInterface;
-
-EFI_GUID SimpleFileSystemProtocolGuid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
-EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *FileSystem;
-
-EFI_GUID FileInfoId = EFI_FILE_INFO_ID;
-EFI_GUID FileSystemInfoId = EFI_FILE_SYSTEM_INFO_ID;
-
 void Print(CHAR16 *string);
 void NewLine();
 void PrintLn(CHAR16 *string);
@@ -81,7 +63,13 @@ void InitializeLibs(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 
 void Print(CHAR16 *string)
 {
+    if (IsInShell)
+        NewLine();
+
     ConOut->OutputString(ConOut, string);
+
+    if (IsInShell)
+        PrintPrompt();
 }
 
 void NewLine()

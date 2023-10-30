@@ -1,7 +1,5 @@
 #pragma once
 
-BOOLEAN IsInShell = FALSE;
-
 typedef struct
 {
     CHAR16 *name;
@@ -14,6 +12,7 @@ void ShowHelp();
 void ExitShell();
 
 // TODO: Add file system support
+// TODO: Add argument support
 CommandInfo Commands[] = {
     {L"help", L"?", L"Show available commands", ShowHelp},
     {L"clear", L"cls", L"Clear the screen", ClearScreen},
@@ -108,14 +107,19 @@ void TabComplete(CHAR16 *buffer)
     }
 }
 
+void PrintPrompt()
+{
+    SetColor(EFI_GREEN);
+    Print(L"$ ");
+    ResetColor();
+}
+
 // TODO: Add command history
 // TODO: Add command editing
 // TODO: Add command chaining
 CHAR16 *ReadInput()
 {
-    SetColor(EFI_GREEN);
-    Print(L"$ ");
-    ResetColor();
+    PrintPrompt();
 
     EFI_INPUT_KEY key;
     CHAR16 *buffer = 0;
@@ -137,6 +141,8 @@ CHAR16 *ReadInput()
             buffer[index] = L'\0';
             break;
         }
+        else if (key.UnicodeChar == L'\t')
+            TabComplete(buffer);
         else if (key.UnicodeChar == L'\b')
         {
             if (index <= 0)
@@ -146,10 +152,6 @@ CHAR16 *ReadInput()
             buffer[index] = L'\0';
             Print(L"\b \b");
         }
-        else if (key.UnicodeChar == L'\e')
-            ExitShell();
-        else if (key.UnicodeChar == L'\t')
-            TabComplete(buffer);
         else if (key.UnicodeChar == L'\0')
             continue;
         else if (index < bufferSize - 1)
