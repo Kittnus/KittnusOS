@@ -2,7 +2,6 @@
 
 #define EFIAPI __cdecl
 
-typedef UINTN EFI_STATUS;
 typedef VOID *EFI_EVENT;
 typedef VOID *EFI_HANDLE;
 typedef struct
