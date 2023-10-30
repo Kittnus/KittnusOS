@@ -5,7 +5,7 @@
 #include "Globals.h"
 #include "Config.h"
 
-#include "EFI/Libs.h"
+#include "Libs.h"
 #include "Shell.h"
 
 EFI_STATUS Boot()
