@@ -5,7 +5,12 @@
 #include "Globals.h"
 #include "Config.h"
 
-#include "Libs.h"
+#include "Libs/BaseLib.h"
+#include "Libs/MemoryLib.h"
+#include "Libs/StringLib.h"
+#include "Libs/ConsoleLib.h"
+#include "Libs/SystemLib.h"
+
 #include "Shell.h"
 
 EFI_STATUS Boot()

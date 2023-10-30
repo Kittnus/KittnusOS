@@ -1,13 +1,16 @@
 {
     "files.associations": {
-        "efi.h": "c",
         "common.h": "c",
         "api.h": "c",
-        "types.h": "c",
         "errors.h": "c",
-        "libs.h": "c",
+        "types.h": "c",
         "shell.h": "c",
         "config.h": "c",
-        "globals.h": "c"
+        "globals.h": "c",
+        "stringlib.h": "c",
+        "memorylib.h": "c",
+        "baselib.h": "c",
+        "consolelib.h": "c",
+        "systemlib.h": "c"
     }
 }
