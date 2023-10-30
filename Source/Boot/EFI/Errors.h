@@ -2,7 +2,7 @@
 
 #define EFI_ERROR(a) (((INTN)a) < 0)
 
-#define EFIERR(a) (0x80000000 | a)
+#define EFIERR(a) (0x8000000000000000ull | a)
 #define EFIWARN(a) (a)
 
 #define EFI_SUCCESS 0
