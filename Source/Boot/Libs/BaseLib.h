@@ -47,5 +47,6 @@ void InitializeLibs(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 
     LocateProtocol(&UnicodeInterfaceGuid, (void **)&UnicodeInterface);
 
-    LocateProtocol(&SimpleFileSystemProtocolGuid, (void **)&FileSystem);
+    LocateProtocol(&SimpleFileSystemProtocolGuid, (void **)&Volume);
+    EFI_CALL(Volume->OpenVolume(Volume, &RootFS));
 }

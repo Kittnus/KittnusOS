@@ -11,6 +11,7 @@
         "memorylib.h": "c",
         "baselib.h": "c",
         "consolelib.h": "c",
-        "systemlib.h": "c"
+        "systemlib.h": "c",
+        "filesystemlib.h": "c"
     }
 }

@@ -15,6 +15,14 @@ UINTN StrLen(CHAR16 *string)
     return length;
 }
 
+UINTN StrLenUTF8(const char *string)
+{
+    UINTN length = 0;
+    while (*string++)
+        length++;
+    return length;
+}
+
 void StrCat(CHAR16 *destination, CHAR16 *source)
 {
     UINTN length = StrLen(destination);
