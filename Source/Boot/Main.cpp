@@ -14,15 +14,18 @@
 
 #include "Shell.h"
 
-EFI_STATUS Boot()
+namespace Kitnuss
 {
-    WriteFile(L"Boot.log", "Hello, World!");
+    EFI_STATUS Boot()
+    {
+        WriteFile(L"Boot.log", "Hello, World!");
 
-    return EFI_SUCCESS;
+        return EFI_SUCCESS;
+    }
 }
 
 // TODO: Port to C++
-EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
+extern "C" EFI_STATUS EFIMain(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE *systemTable)
 {
     InitializeLibs(imageHandle, systemTable);
 
