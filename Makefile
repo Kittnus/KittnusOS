@@ -6,22 +6,18 @@ INT_DIR	:= Intermediate
 CC 		:= gcc
 CFLAGS 	:= -Wall -Werror -m64 -mabi=ms -ffreestanding -I$(SRC_DIR) -I$(VND_DIR)/efi
 
-SRCS := $(wildcard $(SRC_DIR)/**/*.cpp)
-OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(INT_DIR)/%.o, $(SRCS))
-
-all: $(OBJS) $(OUT_DIR)/BOOTX64.efi
-
-$(INT_DIR):
-	@mkdir $@
+all: $(OUT_DIR)/BOOTX64.efi
 
 $(OUT_DIR):
-	@mkdir $@
+	mkdir -p $@
 
-$(INT_DIR)/%.o: $(SRC_DIR)/%.cpp | $(INT_DIR)
-	@mkdir -p $(@D)
+BOOT_OBJS := $(patsubst $(SRC_DIR)/Boot/%.cpp,$(INT_DIR)/Boot/%.o,$(wildcard $(SRC_DIR)/Boot/*.cpp))
+
+$(INT_DIR)/Boot/%.o: $(SRC_DIR)/Boot/%.cpp $(wildcard $(SRC_DIR)/Boot/%.h)
+	mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OUT_DIR)/BOOTX64.efi: $(INT_DIR)/Boot/Boot.o | $(OUT_DIR)
+$(OUT_DIR)/BOOTX64.efi: $(BOOT_OBJS) | $(OUT_DIR)
 	$(CC) $(CFLAGS) -nostdlib -shared -Wl,-dll -Wl,--subsystem,10 -e UefiMain $^ -o $@
 
 clean:
