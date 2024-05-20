@@ -1,8 +1,12 @@
-#define EFI_PLATFORM EFI_ARCH_X64
-#include <efi.h>
+#include "Global.h"
+#include "Graphics.h"
 
-EFI_STATUS EFIAPI UefiMain(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE *SystemTable)
+extern "C" EFI_STATUS EFIAPI UefiMain(EFI_HANDLE ImageHandle,
+                                      EFI_SYSTEM_TABLE* SystemTable)
 {
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Hello, UEFI!\r\n");
-    return EFI_SUCCESS;
+  Global::Initialize(ImageHandle, SystemTable);
+
+  Graphics::ClearScreen();
+
+  return EFI_SUCCESS;
 }
