@@ -2,7 +2,7 @@
 
 #include "Global.h"
 
-#define CHAR_WIDTH 8
+#define CHAR_WIDTH  8
 #define CHAR_HEIGHT 16
 
 void Graphics::Initialize()
@@ -17,8 +17,8 @@ void Graphics::Initialize()
                                        (void**)&Global::GraphicsOutput);
 
   auto graphicsInfo = Global::GraphicsOutput->Mode->Info;
-  int width = graphicsInfo->HorizontalResolution;
-  int height = graphicsInfo->VerticalResolution;
+  auto width = graphicsInfo->HorizontalResolution;
+  auto height = graphicsInfo->VerticalResolution;
 
   m_OffsetX = (width - 80 * CHAR_WIDTH) / 2; // 80 characters per line
   m_OffsetY = (height - 24 * CHAR_HEIGHT) / 2; // 24 lines of text
@@ -27,9 +27,17 @@ void Graphics::Initialize()
   m_CenterY = height / 2;
 }
 
+// TODO: Print using GOP
 void Graphics::Print(const wchar_t* string)
 {
   Global::ConOut->OutputString(Global::ConOut, (CHAR16*)string);
 }
 
+void Graphics::PrintLn(const wchar_t* string)
+{
+  Print(string);
+  Print(L"\n");
+}
+
+// TODO: Clear the screen using GOP
 void Graphics::ClearScreen() { Global::ConOut->ClearScreen(Global::ConOut); }
