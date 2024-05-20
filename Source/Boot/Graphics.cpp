@@ -25,11 +25,9 @@ void Graphics::Initialize()
 
   m_CenterX = width / 2;
   m_CenterY = height / 2;
-
-  
 }
 
-void Graphics::Print(const char* string)
+void Graphics::Print(const wchar_t* string)
 {
   Global::ConOut->OutputString(Global::ConOut, (CHAR16*)string);
 }

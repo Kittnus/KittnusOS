@@ -8,6 +8,6 @@ private:
 public:
   static void Initialize();
 
-  static void Print(const char* string);
+  static void Print(const wchar_t* string);
   static void ClearScreen();
 };

@@ -9,7 +9,9 @@ extern "C" EFI_STATUS EFIAPI UefiMain(EFI_HANDLE imageHandle,
   Graphics::Initialize();
   Graphics::ClearScreen();
 
-  Graphics::Print("Hello, World!");
+  Graphics::Print(L"Hello, World!");
+
+  Global::BootServices->Stall(30 * 1000 * 1000); // 30 seconds
 
   return EFI_SUCCESS;
 }
