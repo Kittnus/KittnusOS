@@ -72,7 +72,7 @@ void LoadKernel()
       LoadElfKernel((Elf32Header*)KERNEL_LOAD_ADDRESS);
   }
 
-  Graphics::PrintLn(L"Invalid kernel format, only ELF files are supported");
+  Graphics::PrintLn(L"Invalid kernel format");
   while (true);
 }
 
