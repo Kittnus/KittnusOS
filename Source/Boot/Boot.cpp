@@ -52,7 +52,7 @@ void LoadElfKernel(Elf32Header* header)
 
 void LoadKernel()
 {
-#define KERNEL_LOAD_ADDRESS 0x4000000ULL // 64 MB offset
+  constexpr UInt64 KERNEL_LOAD_ADDRESS = 0x4000000ULL; // 64 MB offset
 
   auto kernelFile = FileSystem::OpenFile(L"kernel.elf", EFI_FILE_MODE_READ);
 
@@ -108,7 +108,6 @@ void CreateMemoryMap(MultibootHeader* header)
   Memory::Zero((void*)Global::KernelRoundedAddress, 0x400);
   header->MmapAddr = Global::KernelRoundedAddress;
 
-  // TODO: Error handling
   UInt64 mmapSize, mapKey, descriptorSize;
   IF_ERROR_FATAL(Global::BootServices->GetMemoryMap(&mmapSize, NULL, &mapKey,
                                                     &descriptorSize, NULL),
