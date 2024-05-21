@@ -52,7 +52,7 @@ void Kernel::Execute()
   typedef void (*KernelEntry)(UInt32, UInt32);
   ((KernelEntry)s_KernelEntry)(
       MULTIBOOT_EAX_MAGIC,
-      (UInt32)(UInt64)&s_Header); // TODO: Check if this actually works lol
+      (UInt32)(UInt64)&s_Header); // TODO: See if we can directly call start_mb2 of the PreKernel
 
   while (true);
 }

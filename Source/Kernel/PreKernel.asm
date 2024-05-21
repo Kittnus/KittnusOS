@@ -123,6 +123,7 @@ section .bootstrap
   global start
   type start, @function
 
+  # Only this function should be called from the "Kittnus Neo" bootloader
   start_mb2:
     call initialize_multiboot2
     call Main
