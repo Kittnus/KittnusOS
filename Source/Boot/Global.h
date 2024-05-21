@@ -14,8 +14,6 @@ public:
 
   static inline EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL* ConOut;
   static inline EFI_SIMPLE_TEXT_INPUT_PROTOCOL* ConIn;
-
-  static inline EFI_GRAPHICS_OUTPUT_PROTOCOL* GraphicsOutput;
 public:
   static void Initialize(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE* systemTable);
 };

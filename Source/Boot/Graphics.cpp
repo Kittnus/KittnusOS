@@ -15,20 +15,20 @@ void Graphics::Initialize()
                 ByProtocol, &graphicsOutputProtocolGuid, NULL, NULL,
                 &graphicsHandles),
             L"Failed to locate graphics output protocol");
-  EFI_CHECK(Global::BootServices->HandleProtocol(
-                graphicsHandles[0], &graphicsOutputProtocolGuid,
-                (void**)&Global::GraphicsOutput),
+  EFI_CHECK(Global::BootServices->HandleProtocol(graphicsHandles[0],
+                                                 &graphicsOutputProtocolGuid,
+                                                 (void**)&s_GraphicsOutput),
             L"Failed to get graphics handle");
 
-  auto graphicsInfo = Global::GraphicsOutput->Mode->Info;
+  auto graphicsInfo = s_GraphicsOutput->Mode->Info;
   auto width = graphicsInfo->HorizontalResolution;
   auto height = graphicsInfo->VerticalResolution;
 
-  m_OffsetX = (width - 80 * CHAR_WIDTH) / 2; // 80 characters per line
-  m_OffsetY = (height - 24 * CHAR_HEIGHT) / 2; // 24 lines of text
+  s_OffsetX = (width - 80 * CHAR_WIDTH) / 2; // 80 characters per line
+  s_OffsetY = (height - 24 * CHAR_HEIGHT) / 2; // 24 lines of text
 
-  m_CenterX = width / 2;
-  m_CenterY = height / 2;
+  s_CenterX = width / 2;
+  s_CenterY = height / 2;
 }
 
 // TODO: Print using GOP

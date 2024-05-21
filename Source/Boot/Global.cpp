@@ -9,6 +9,4 @@ void Global::Initialize(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE* systemTable)
 
   ConOut = SystemTable->ConOut;
   ConIn = SystemTable->ConIn;
-
-  GraphicsOutput = nullptr; // TODO: Move to Graphics class
 }

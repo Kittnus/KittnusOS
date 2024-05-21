@@ -12,7 +12,7 @@ void ExitBS()
 
 void Boot()
 {
-  // * Think about using a watchdog timer to reset the system if the kernel hangs
+  // TODO: Think about using a watchdog timer to reset the system if the loader hangs
   // TODO: Add Boot option support
 
   Kernel::FindACPI();

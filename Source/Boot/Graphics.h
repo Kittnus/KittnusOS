@@ -5,9 +5,10 @@
 class Graphics
 {
 private:
-  static inline int m_OffsetX, m_OffsetY;
-  static inline int m_CenterX, m_CenterY;
+  static inline int s_OffsetX, s_OffsetY;
+  static inline int s_CenterX, s_CenterY;
 
+  static inline EFI_GRAPHICS_OUTPUT_PROTOCOL* s_GraphicsOutput;
 public:
   static void Initialize();
 
