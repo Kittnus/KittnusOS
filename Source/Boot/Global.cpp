@@ -59,8 +59,4 @@ void Global::Initialize(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE* systemTable)
   ConIn = SystemTable->ConIn;
 
   GraphicsOutput = nullptr;
-
-  LoadedImage = nullptr;
-  SimpleFileSystem = nullptr;
-  RootDirectory = nullptr;
 }

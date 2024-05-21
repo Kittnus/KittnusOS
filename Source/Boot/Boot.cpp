@@ -1,4 +1,5 @@
 #include "Elf.h"
+#include "FileSystem.h"
 #include "Global.h"
 #include "Graphics.h"
 #include "Memory.h"
@@ -51,11 +52,7 @@ void LoadKernel()
 {
 #define KERNEL_LOAD_ADDRESS 0x4000000ULL // 64 MB offset
 
-  EFI_FILE_PROTOCOL* kernelFile;
-  IF_ERROR(Global::RootDirectory->Open(Global::RootDirectory, &kernelFile,
-                                       (CHAR16*)L"Kernel.elf",
-                                       EFI_FILE_MODE_READ, 0),
-           L"Failed to open Kernel.elf");
+  auto kernelFile = FileSystem::OpenFile(L"kernel.elf", EFI_FILE_MODE_READ);
 
   EFI_PHYSICAL_ADDRESS address = KERNEL_LOAD_ADDRESS;
   EFI_ALLOCATE_TYPE type = AllocateAddress;
@@ -100,26 +97,6 @@ void FindACPITable()
         Global::MultibootHeader.ConfigTable =
             (UINTN)table->VendorTable & 0xFFFFFFFF;
     }
-}
-
-void SetupFileSystem()
-{
-  EFI_GUID loadedImageProtocolGuid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
-  IF_ERROR_FATAL(Global::BootServices->HandleProtocol(
-                     Global::ImageHandle, &loadedImageProtocolGuid,
-                     (void**)&Global::LoadedImage),
-                 L"Failed to get loaded image protocol");
-
-  EFI_GUID simpleFileSystemProtocolGuid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
-  IF_ERROR_FATAL(
-      Global::BootServices->HandleProtocol(Global::LoadedImage->DeviceHandle,
-                                           &simpleFileSystemProtocolGuid,
-                                           (void**)&Global::SimpleFileSystem),
-      L"Failed to get simple file system protocol");
-
-  IF_ERROR_FATAL(Global::SimpleFileSystem->OpenVolume(Global::SimpleFileSystem,
-                                                      &Global::RootDirectory),
-                 L"Failed to open root directory");
 }
 
 void CreateMemoryMap(MultibootHeader* header)
@@ -245,7 +222,7 @@ void Boot()
   // TODO: Add Boot option support
 
   FindACPITable();
-  SetupFileSystem();
+  FileSystem::Initialize();
 
   LoadKernel();
 
