@@ -1,6 +1,7 @@
 #include "FileSystem.h"
 
 #include "Global.h"
+#include "Memory.h"
 #include "StringUtils.h"
 
 void FileSystem::Initialize()
@@ -30,6 +31,6 @@ EFI_FILE_PROTOCOL* FileSystem::OpenFile(const wchar_t* path, UInt64 mode)
       s_RootDirectory->Open(s_RootDirectory, &file, (CHAR16*)path, mode, 0),
       errorMessage);
 
-  delete[] errorMessage;
+  Memory::Free(errorMessage);
   return file;
 }
