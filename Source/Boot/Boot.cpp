@@ -55,7 +55,7 @@ void LoadKernel()
   IF_ERROR(Global::RootDirectory->Open(Global::RootDirectory, &kernelFile,
                                        (CHAR16*)L"Kernel.elf",
                                        EFI_FILE_MODE_READ, 0),
-           L"Failed to open Kernel.elf", true);
+           L"Failed to open Kernel.elf");
 
   EFI_PHYSICAL_ADDRESS address = KERNEL_LOAD_ADDRESS;
   EFI_ALLOCATE_TYPE type = AllocateAddress;
@@ -73,7 +73,8 @@ void LoadKernel()
       LoadElfKernel((Elf32Header*)KERNEL_LOAD_ADDRESS);
   }
 
-  // TODO: Throw error when no multiboot header is found
+  Graphics::PrintLn(L"Invalid kernel format, only ELF files are supported");
+  while (true);
 }
 
 void FindACPITable()
@@ -103,19 +104,22 @@ void FindACPITable()
 
 void SetupFileSystem()
 {
-  // TODO: Implement error handling
   EFI_GUID loadedImageProtocolGuid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
-  Global::BootServices->HandleProtocol(Global::ImageHandle,
-                                       &loadedImageProtocolGuid,
-                                       (void**)&Global::LoadedImage);
+  IF_ERROR_FATAL(Global::BootServices->HandleProtocol(
+                     Global::ImageHandle, &loadedImageProtocolGuid,
+                     (void**)&Global::LoadedImage),
+                 L"Failed to get loaded image protocol");
 
   EFI_GUID simpleFileSystemProtocolGuid = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
-  Global::BootServices->HandleProtocol(Global::LoadedImage->DeviceHandle,
-                                       &simpleFileSystemProtocolGuid,
-                                       (void**)&Global::SimpleFileSystem);
+  IF_ERROR_FATAL(
+      Global::BootServices->HandleProtocol(Global::LoadedImage->DeviceHandle,
+                                           &simpleFileSystemProtocolGuid,
+                                           (void**)&Global::SimpleFileSystem),
+      L"Failed to get simple file system protocol");
 
-  Global::SimpleFileSystem->OpenVolume(Global::SimpleFileSystem,
-                                       &Global::RootDirectory);
+  IF_ERROR_FATAL(Global::SimpleFileSystem->OpenVolume(Global::SimpleFileSystem,
+                                                      &Global::RootDirectory),
+                 L"Failed to open root directory");
 }
 
 void CreateMemoryMap(MultibootHeader* header)
@@ -127,16 +131,18 @@ void CreateMemoryMap(MultibootHeader* header)
 
   // TODO: Error handling
   UINTN mmapSize, mapKey, descriptorSize;
-  Global::BootServices->GetMemoryMap(&mmapSize, NULL, &mapKey, &descriptorSize,
-                                     NULL);
+  IF_ERROR_FATAL(Global::BootServices->GetMemoryMap(&mmapSize, NULL, &mapKey,
+                                                    &descriptorSize, NULL),
+                 L"Failed to get memory map size");
 
   auto memory = (EFI_MEMORY_DESCRIPTOR*)Global::KernelRoundedAddress;
   Global::KernelEntryAddress += mmapSize;
   while ((UINTN)Global::KernelRoundedAddress & 0x3FF)
     Global::KernelRoundedAddress++;
 
-  Global::BootServices->GetMemoryMap(&mmapSize, memory, &mapKey,
-                                     &descriptorSize, NULL);
+  IF_ERROR_FATAL(Global::BootServices->GetMemoryMap(&mmapSize, memory, &mapKey,
+                                                    &descriptorSize, NULL),
+                 L"Failed to get memory map");
 
   UINTN upperMemory = 0;
   int mmapEntries = mmapSize / descriptorSize;
@@ -184,6 +190,12 @@ void CreateMemoryMap(MultibootHeader* header)
   header->MemUpper = upperMemory / 0x400;
 }
 
+#define SetMemberString(member, string)                            \
+  Memory::Copy((void*)Global::KernelRoundedAddress, (void*)string, \
+               sizeof(string) + 1);                                \
+  member = (UInt32)Global::KernelRoundedAddress;                   \
+  Global::KernelRoundedAddress += sizeof(string) + 1;
+
 MultibootHeader* SetupMultibootHeader()
 {
   auto header = (MultibootHeader*)Global::KernelRoundedAddress;
@@ -193,18 +205,8 @@ MultibootHeader* SetupMultibootHeader()
 
   header->Flags |= MULTIBOOT_FLAGS_MEM;
 
-  // TODO: Simplify this
-  auto cmdLine = "";
-  Memory::Copy((void*)Global::KernelRoundedAddress, (void*)cmdLine,
-               sizeof(cmdLine) + 1);
-  header->CmdLine = Global::KernelRoundedAddress;
-  Global::KernelRoundedAddress += sizeof(cmdLine) + 1;
-
-  auto loaderName = "Kitten Loader";
-  Memory::Copy((void*)Global::KernelRoundedAddress, (void*)loaderName,
-               sizeof(loaderName) + 1);
-  header->BootLoaderName = Global::KernelRoundedAddress;
-  Global::KernelRoundedAddress += sizeof(loaderName) + 1;
+  SetMemberString(header->CmdLine, "");
+  SetMemberString(header->BootLoaderName, "Kittnus Neo");
 
   auto graphicsMode = Global::GraphicsOutput->Mode;
   auto graphicsInfo = graphicsMode->Info;

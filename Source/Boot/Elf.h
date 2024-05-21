@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Types.h"
+
 #define ELF32_R_SYM(i)     ((i) >> 8)
 #define ELF32_R_TYPE(i)    ((i) & 0xFF)
 #define ELF32_R_INFO(s, t) (((s) << 8) + ((t) & 0xFF))
@@ -13,15 +15,15 @@
 #define ELFMAG2 'L'
 #define ELFMAG3 'F'
 
-using Elf32_Addr = UINT32;
-using Elf32_Half = UINT16;
-using Elf32_Off = UINT32;
-using Elf32_Sword = INT32;
-using Elf32_Word = UINT32;
+using Elf32_Addr = UInt32;
+using Elf32_Half = UInt16;
+using Elf32_Off = UInt32;
+using Elf32_Sword = Int32;
+using Elf32_Word = UInt32;
 
 struct Elf32Header
 {
-  UINT8 e_ident[16];
+  UInt8 e_ident[16];
   Elf32_Half e_type;
 
   Elf32_Half e_machine;
@@ -138,8 +140,8 @@ struct Elf32Symbol
   Elf32_Addr st_value;
   Elf32_Word st_size;
 
-  UINT8 st_info;
-  UINT8 st_other;
+  UInt8 st_info;
+  UInt8 st_other;
 
   Elf32_Half st_shndx;
 };
