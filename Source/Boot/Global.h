@@ -2,17 +2,17 @@
 
 #define NULL 0
 
+#include "Elf.h"
+#include "Multiboot.h"
+
 #define EFI_PLATFORM EFI_ARCH_X64
 #include <efi.h>
 #include <protocol/efi-gop.h>
 #include <protocol/efi-lip.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-#include <protocol/efi-sfsp.h> // Fix the flexible array member issue in EFI_FILE_SYSTEM_VOLUME_LABEL
+#include <protocol/efi-sfsp.h>
 #pragma GCC diagnostic pop
-
-#include "Elf.h"
-#include "Multiboot.h"
 
 class Global
 {

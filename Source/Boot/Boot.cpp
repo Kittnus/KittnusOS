@@ -1,5 +1,3 @@
-#include "Boot.h"
-
 #include "Global.h"
 #include "Graphics.h"
 
@@ -184,7 +182,7 @@ void CreateMemoryMap(MultibootHeader* header)
 MultibootHeader* SetupMultibootHeader()
 {
   auto header = (MultibootHeader*)Global::KernelRoundedAddress;
-  for (auto i = 0; i < sizeof(MultibootHeader); i++)
+  for (UINTN i = 0; i < sizeof(MultibootHeader); i++)
     *(UINT8*)(Global::KernelRoundedAddress + i) =
         *(UINT8*)(&Global::MultibootHeader + i);
   Global::KernelRoundedAddress += sizeof(MultibootHeader);
@@ -192,13 +190,13 @@ MultibootHeader* SetupMultibootHeader()
   header->Flags |= MULTIBOOT_FLAGS_MMAP;
 
   auto cmdLine = "";
-  for (auto i = 0; i < sizeof(cmdLine) + 1; i++)
+  for (UINTN i = 0; i < sizeof(cmdLine) + 1; i++)
     *(UINT8*)(Global::KernelRoundedAddress + i) = cmdLine[i];
   header->CmdLine = Global::KernelRoundedAddress;
   Global::KernelRoundedAddress += sizeof(cmdLine) + 1;
 
   auto name = "Kitten Loader";
-  for (auto i = 0; i < sizeof(name) + 1; i++)
+  for (UINTN i = 0; i < sizeof(name) + 1; i++)
     *(UINT8*)(Global::KernelRoundedAddress + i) = name[i];
   header->BootLoaderName = Global::KernelRoundedAddress;
   Global::KernelRoundedAddress += sizeof(name) + 1;
@@ -212,6 +210,8 @@ MultibootHeader* SetupMultibootHeader()
   header->FramebufferBpp = 32;
 
   RealignMemory();
+
+  return header;
 }
 
 void ExitBootServices()
