@@ -3,8 +3,8 @@ VND_DIR := Vendor
 OUT_DIR := Binaries
 INT_DIR	:= Intermediate
 
-CC 		:= gcc
-CFLAGS 	:= -Wall -Werror -m64 -mabi=ms -ffreestanding
+CC 			:= gcc
+CFLAGS 	:= -Wall -Werror -m64 -mabi=ms -ffreestanding -I$(SRC_DIR)/Common
 
 all: $(OUT_DIR)/EFI/Boot/Bootx64.efi
 
