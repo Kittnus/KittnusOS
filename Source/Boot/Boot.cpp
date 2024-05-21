@@ -253,6 +253,8 @@ void DisplayCountDown()
 
     Global::BootServices->Stall(1 * 1000 * 1000);
   }
+
+  Graphics::ClearScreen();
 }
 
 extern "C" EFI_STATUS EFIAPI UefiMain(EFI_HANDLE imageHandle,
