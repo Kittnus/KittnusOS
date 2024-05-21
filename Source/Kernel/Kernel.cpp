@@ -32,8 +32,7 @@ void Kernel::FindACPI()
           && table->VendorGuid.Data4[5] == guid.Data4[5]
           && table->VendorGuid.Data4[6] == guid.Data4[6]
           && table->VendorGuid.Data4[7] == guid.Data4[7])
-        s_Header.ConfigTable =
-            (UInt64)table->VendorTable & 0xFFFFFFFF;
+        s_Header.ConfigTable = (UInt64)table->VendorTable & 0xFFFFFFFF;
     }
 }
 
