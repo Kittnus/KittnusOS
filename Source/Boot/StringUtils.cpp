@@ -10,7 +10,6 @@ wchar_t* StringUtils::Concat(const wchar_t* string1, const wchar_t* string2)
   auto destination = result;
 
   while (*string1) *destination++ = *string1++;
-
   while (*string2) *destination++ = *string2++;
 
   *destination = 0;

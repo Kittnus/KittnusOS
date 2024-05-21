@@ -22,20 +22,20 @@ void LoadElfKernel(Elf32Header* header)
     while (true);
   }
 
-  for (UINTN i = 0; i < (UINT32)header->e_phentsize * header->e_phnum;
+  for (auto i = 0ull; i < (UInt32)header->e_phentsize * header->e_phnum;
        i += header->e_phentsize)
   {
     auto programHeader =
-        (Elf32ProgramHeader*)((UINTN)header + header->e_phoff + i);
+        (Elf32ProgramHeader*)((UInt64)header + header->e_phoff + i);
     if (programHeader->p_type == PT_LOAD)
     {
-      Memory::Copy((UINT8*)(UINTN)programHeader->p_vaddr,
-                   (void*)((UINTN)header + programHeader->p_offset),
+      Memory::Copy((UInt8*)(UInt64)programHeader->p_vaddr,
+                   (void*)((UInt64)header + programHeader->p_offset),
                    programHeader->p_filesz);
-      UINTN remaining = programHeader->p_filesz;
+      UInt64 remaining = programHeader->p_filesz;
       while (remaining < programHeader->p_memsz)
       {
-        *(UINT8*)(programHeader->p_vaddr + remaining) = 0;
+        *(UInt8*)(programHeader->p_vaddr + remaining) = 0;
         remaining++;
       }
       if (programHeader->p_vaddr + programHeader->p_memsz
@@ -57,15 +57,15 @@ void LoadKernel()
   EFI_PHYSICAL_ADDRESS address = KERNEL_LOAD_ADDRESS;
   EFI_ALLOCATE_TYPE type = AllocateAddress;
   EFI_MEMORY_TYPE memoryType = EfiLoaderData;
-  UINTN pages = 0x2000; // 8 KB
+  auto pages = 0x2000ULL; // 8 KB
   Global::BootServices->AllocatePages(type, memoryType, pages, &address);
 
-  UINTN kernelSize = 0;
+  auto kernelSize = 0ULL;
   kernelFile->Read(kernelFile, &kernelSize, (void*)KERNEL_LOAD_ADDRESS);
 
-  for (UINTN i = 0; i < 0x2000; i += 4)
+  for (auto i = 0ULL; i < 0x2000; i += 4)
   {
-    auto ptr = (UINT32*)(KERNEL_LOAD_ADDRESS + i);
+    auto ptr = (UInt32*)(KERNEL_LOAD_ADDRESS + i);
     if (*ptr == MULTIBOOT_MAGIC)
       LoadElfKernel((Elf32Header*)KERNEL_LOAD_ADDRESS);
   }
@@ -80,7 +80,7 @@ void FindACPITable()
   static const EFI_GUID acpi20TableGuid = EFI_ACPI_20_TABLE_GUID;
   EFI_GUID acpiTableGuids[] = { acpi10TableGuid, acpi20TableGuid };
   for (auto guid : acpiTableGuids)
-    for (UINTN j = 0; j < Global::SystemTable->NumberOfTableEntries; j++)
+    for (auto j = 0ULL; j < Global::SystemTable->NumberOfTableEntries; j++)
     {
       auto table = &Global::SystemTable->ConfigurationTable[j];
       if (table->VendorGuid.Data1 == guid.Data1
@@ -95,7 +95,7 @@ void FindACPITable()
           && table->VendorGuid.Data4[6] == guid.Data4[6]
           && table->VendorGuid.Data4[7] == guid.Data4[7])
         Global::MultibootHeader.ConfigTable =
-            (UINTN)table->VendorTable & 0xFFFFFFFF;
+            (UInt64)table->VendorTable & 0xFFFFFFFF;
     }
 }
 
@@ -107,28 +107,28 @@ void CreateMemoryMap(MultibootHeader* header)
   header->MmapAddr = Global::KernelRoundedAddress;
 
   // TODO: Error handling
-  UINTN mmapSize, mapKey, descriptorSize;
+  UInt64 mmapSize, mapKey, descriptorSize;
   IF_ERROR_FATAL(Global::BootServices->GetMemoryMap(&mmapSize, NULL, &mapKey,
                                                     &descriptorSize, NULL),
                  L"Failed to get memory map size");
 
   auto memory = (EFI_MEMORY_DESCRIPTOR*)Global::KernelRoundedAddress;
   Global::KernelEntryAddress += mmapSize;
-  while ((UINTN)Global::KernelRoundedAddress & 0x3FF)
+  while ((UInt64)Global::KernelRoundedAddress & 0x3FF)
     Global::KernelRoundedAddress++;
 
   IF_ERROR_FATAL(Global::BootServices->GetMemoryMap(&mmapSize, memory, &mapKey,
                                                     &descriptorSize, NULL),
                  L"Failed to get memory map");
 
-  UINTN upperMemory = 0;
+  auto upperMemory = 0ULL;
   int mmapEntries = mmapSize / descriptorSize;
   for (int i = 0; i < mmapEntries; i++)
   {
     auto descriptor =
-        (EFI_MEMORY_DESCRIPTOR*)((UINTN)memory + i * descriptorSize);
+        (EFI_MEMORY_DESCRIPTOR*)((UInt64)memory + i * descriptorSize);
 
-    mmap->Size = descriptorSize - sizeof(UINT32);
+    mmap->Size = descriptorSize - sizeof(UInt32);
     mmap->BaseAddr = descriptor->PhysicalStart;
     mmap->Length = descriptor->NumberOfPages * 4096;
 
@@ -157,11 +157,11 @@ void CreateMemoryMap(MultibootHeader* header)
     if (mmap->Type == 1 && mmap->BaseAddr >= 0x100000)
       upperMemory += mmap->Length;
 
-    mmap = (MultibootMemoryMap*)((UINTN)mmap + mmap->Size + sizeof(UINT32));
-    memory = (EFI_MEMORY_DESCRIPTOR*)((UINTN)memory + descriptorSize);
+    mmap = (MultibootMemoryMap*)((UInt64)mmap + mmap->Size + sizeof(UInt32));
+    memory = (EFI_MEMORY_DESCRIPTOR*)((UInt64)memory + descriptorSize);
   }
 
-  header->MmapLength = (UINT32)((UINTN)mmap - header->MmapAddr);
+  header->MmapLength = (UInt32)((UInt64)mmap - header->MmapAddr);
 
   header->MemLower = 0x400;
   header->MemUpper = upperMemory / 0x400;
@@ -200,7 +200,7 @@ MultibootHeader* SetupMultibootHeader()
 
 void ExitBootServices()
 {
-  UINTN mapKey;
+  UInt64 mapKey;
   Global::BootServices->GetMemoryMap(NULL, NULL, &mapKey, NULL, NULL);
   Global::BootServices->ExitBootServices(Global::ImageHandle, mapKey);
 }

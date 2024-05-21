@@ -29,4 +29,7 @@ EFI_FILE_PROTOCOL* FileSystem::OpenFile(const wchar_t* path, UInt64 mode)
   IF_ERROR(
       s_RootDirectory->Open(s_RootDirectory, &file, (CHAR16*)path, mode, 0),
       errorMessage);
+
+  delete[] errorMessage;
+  return file;
 }
