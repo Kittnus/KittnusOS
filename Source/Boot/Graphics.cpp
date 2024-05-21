@@ -11,11 +11,14 @@ void Graphics::Initialize()
 
   // TODO: Better error handling
   EFI_GUID graphicsOutputProtocolGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
-  Global::BootServices->LocateHandleBuffer(
-      ByProtocol, &graphicsOutputProtocolGuid, NULL, NULL, &graphicsHandles);
-  Global::BootServices->HandleProtocol(graphicsHandles[0],
-                                       &graphicsOutputProtocolGuid,
-                                       (void**)&Global::GraphicsOutput);
+  EFI_CHECK(Global::BootServices->LocateHandleBuffer(
+                ByProtocol, &graphicsOutputProtocolGuid, NULL, NULL,
+                &graphicsHandles),
+            L"Failed to locate graphics output protocol");
+  EFI_CHECK(Global::BootServices->HandleProtocol(
+                graphicsHandles[0], &graphicsOutputProtocolGuid,
+                (void**)&Global::GraphicsOutput),
+            L"Failed to get graphics handle");
 
   auto graphicsInfo = Global::GraphicsOutput->Mode->Info;
   auto width = graphicsInfo->HorizontalResolution;

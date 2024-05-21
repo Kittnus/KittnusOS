@@ -50,7 +50,9 @@ void Kernel::Initialize()
 void Kernel::Execute()
 {
   typedef void (*KernelEntry)(UInt32, UInt32);
-  ((KernelEntry)s_KernelEntry)(MULTIBOOT_EAX_MAGIC, (UInt32)(UInt64)&s_Header); // TODO: Check if this actually works lol
+  ((KernelEntry)s_KernelEntry)(
+      MULTIBOOT_EAX_MAGIC,
+      (UInt32)(UInt64)&s_Header); // TODO: Check if this actually works lol
 
   while (true);
 }
@@ -201,17 +203,17 @@ void Kernel::CreateMemoryMap()
   s_Header.MmapAddr = s_KernelEndRounded;
 
   UInt64 mmapSize, mapKey, descriptorSize;
-  IF_ERROR_FATAL(Global::BootServices->GetMemoryMap(&mmapSize, NULL, &mapKey,
-                                                    &descriptorSize, NULL),
-                 L"Failed to get memory map size");
+  EFI_CHECK(Global::BootServices->GetMemoryMap(&mmapSize, NULL, &mapKey,
+                                               &descriptorSize, NULL),
+            L"Failed to get memory map size");
 
   auto memory = (EFI_MEMORY_DESCRIPTOR*)s_KernelEndRounded;
   s_KernelEntry += mmapSize;
   while ((UInt64)s_KernelEndRounded & 0x3FF) s_KernelEndRounded++;
 
-  IF_ERROR_FATAL(Global::BootServices->GetMemoryMap(&mmapSize, memory, &mapKey,
-                                                    &descriptorSize, NULL),
-                 L"Failed to get memory map");
+  EFI_CHECK(Global::BootServices->GetMemoryMap(&mmapSize, memory, &mapKey,
+                                               &descriptorSize, NULL),
+            L"Failed to get memory map");
 
   auto upperMemory = 0ULL;
   int mmapEntries = mmapSize / descriptorSize;

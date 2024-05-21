@@ -1,11 +1,7 @@
-// TODO: Clean up includes
-#include "Elf.h"
 #include "FileSystem.h"
 #include "Global.h"
 #include "Graphics.h"
 #include "Kernel.h"
-#include "Memory.h"
-#include "String.h"
 
 void ExitBS()
 {
