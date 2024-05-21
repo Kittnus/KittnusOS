@@ -1,5 +1,7 @@
 #pragma once
 
+#define PACKED __attribute__((packed))
+
 #define MULTIBOOT_MAGIC             0x1BADB002
 #define MULTIBOOT_FLAGS_MEM         0x1
 #define MULTIBOOT_FLAGS_DEVICE      0x2
@@ -14,7 +16,7 @@
 #define MULTIBOOT_FLAGS_APM         0x400
 #define MULTIBOOT_FLAGS_VBE         0x800
 
-struct __attribute__((packed)) MultibootHeader
+struct PACKED MultibootHeader
 {
   UINT32 Flags;
 
@@ -58,4 +60,20 @@ struct __attribute__((packed)) MultibootHeader
   UINT32 FramebufferHeight;
   UINT8 FramebufferBpp;
   UINT8 FramebufferType;
+};
+
+struct PACKED MultibootModule
+{
+  UINT32 ModStart;
+  UINT32 ModEnd;
+  UINT32 String;
+  UINT32 Reserved;
+};
+
+struct PACKED MultibootMemoryMap
+{
+  UINT32 Size;
+  UINT64 BaseAddr;
+  UINT64 Length;
+  UINT32 Type;
 };

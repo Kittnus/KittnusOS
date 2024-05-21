@@ -9,11 +9,12 @@ void Graphics::Initialize()
 {
   EFI_HANDLE* graphicsHandles;
 
-  EFI_GUID GraphicsOutputProtocolGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+  // TODO: Better error handling
+  EFI_GUID graphicsOutputProtocolGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
   Global::BootServices->LocateHandleBuffer(
-      ByProtocol, &GraphicsOutputProtocolGuid, NULL, nullptr, &graphicsHandles);
+      ByProtocol, &graphicsOutputProtocolGuid, NULL, nullptr, &graphicsHandles);
   Global::BootServices->HandleProtocol(graphicsHandles[0],
-                                       &GraphicsOutputProtocolGuid,
+                                       &graphicsOutputProtocolGuid,
                                        (void**)&Global::GraphicsOutput);
 
   auto graphicsInfo = Global::GraphicsOutput->Mode->Info;
