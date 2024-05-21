@@ -59,7 +59,7 @@ void Boot()
 void CountDown()
 {
   // TODO: Make this look better once Graphics uses GOP
-  for (int i = 5; i > 0; i--)
+  for (int i = 3; i > 0; i--)
   {
     Graphics::ClearScreen();
     Graphics::Print(L"Booting KittnusOS in ");
