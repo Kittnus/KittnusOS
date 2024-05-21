@@ -1,10 +1,5 @@
 #pragma once
 
-#define NULL 0
-
-#include "Elf.h"
-#include "Multiboot.h"
-
 #define EFI_PLATFORM EFI_ARCH_X64
 #include <efi.h>
 #include <protocol/efi-gop.h>
@@ -13,6 +8,12 @@
 #pragma GCC diagnostic ignored "-Wpedantic"
 #include <protocol/efi-sfsp.h>
 #pragma GCC diagnostic pop
+
+#define NULL 0
+
+#include "Elf.h"
+#include "Memory.h"
+#include "Multiboot.h"
 
 class Global
 {

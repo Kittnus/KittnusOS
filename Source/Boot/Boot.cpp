@@ -24,9 +24,9 @@ void LoadElfKernel(Elf32Header* header)
         (Elf32ProgramHeader*)((UINTN)header + header->e_phoff + i);
     if (programHeader->p_type == PT_LOAD)
     {
-      for (UINTN j = 0; j < programHeader->p_filesz; j++)
-        *(UINT8*)(programHeader->p_vaddr + j) =
-            *(UINT8*)((UINTN)header + programHeader->p_offset + j);
+      Memory::Copy((UINT8*)(UINTN)programHeader->p_vaddr,
+                   (void*)((UINTN)header + programHeader->p_offset),
+                   programHeader->p_filesz);
       UINTN remaining = programHeader->p_filesz;
       while (remaining < programHeader->p_memsz)
       {
@@ -73,7 +73,7 @@ void LoadKernel()
 void FindACPITable()
 {
   static const EFI_GUID acpi10TableGuid =
-      EFO_ACPI_10_TABLE_GUID; // Typo in the original code hahaha
+      EFI_ACPI_10_TABLE_GUID;
   static const EFI_GUID acpi20TableGuid = EFI_ACPI_20_TABLE_GUID;
   EFI_GUID acpiTableGuids[] = { acpi10TableGuid, acpi20TableGuid };
   for (auto guid : acpiTableGuids)
@@ -116,8 +116,8 @@ void SetupFileSystem()
 void CreateMemoryMap(MultibootHeader* header)
 {
   auto mmap = (MultibootMemoryMap*)Global::KernelRoundedAddress;
-  for (auto i = 0; i < 1024; i++)
-    *(UINT8*)(Global::KernelRoundedAddress + i) = 0;
+
+  Memory::Zero((void*)Global::KernelRoundedAddress, 0x400);
   header->MmapAddr = Global::KernelRoundedAddress;
 
   // TODO: Error handling
@@ -182,24 +182,24 @@ void CreateMemoryMap(MultibootHeader* header)
 MultibootHeader* SetupMultibootHeader()
 {
   auto header = (MultibootHeader*)Global::KernelRoundedAddress;
-  for (UINTN i = 0; i < sizeof(MultibootHeader); i++)
-    *(UINT8*)(Global::KernelRoundedAddress + i) =
-        *(UINT8*)(&Global::MultibootHeader + i);
+  Memory::Copy((void*)Global::KernelRoundedAddress,
+               (void*)&Global::MultibootHeader, sizeof(MultibootHeader));
   Global::KernelRoundedAddress += sizeof(MultibootHeader);
 
-  header->Flags |= MULTIBOOT_FLAGS_MMAP;
+  header->Flags |= MULTIBOOT_FLAGS_MEM;
 
+  // TODO: Simplify this
   auto cmdLine = "";
-  for (UINTN i = 0; i < sizeof(cmdLine) + 1; i++)
-    *(UINT8*)(Global::KernelRoundedAddress + i) = cmdLine[i];
+  Memory::Copy((void*)Global::KernelRoundedAddress, (void*)cmdLine,
+               sizeof(cmdLine) + 1);
   header->CmdLine = Global::KernelRoundedAddress;
   Global::KernelRoundedAddress += sizeof(cmdLine) + 1;
 
-  auto name = "Kitten Loader";
-  for (UINTN i = 0; i < sizeof(name) + 1; i++)
-    *(UINT8*)(Global::KernelRoundedAddress + i) = name[i];
+  auto loaderName = "Kitten Loader";
+  Memory::Copy((void*)Global::KernelRoundedAddress, (void*)loaderName,
+               sizeof(loaderName) + 1);
   header->BootLoaderName = Global::KernelRoundedAddress;
-  Global::KernelRoundedAddress += sizeof(name) + 1;
+  Global::KernelRoundedAddress += sizeof(loaderName) + 1;
 
   auto graphicsMode = Global::GraphicsOutput->Mode;
   auto graphicsInfo = graphicsMode->Info;
@@ -223,8 +223,11 @@ void ExitBootServices()
 
 void RunKernel(MultibootHeader* header)
 {
-  __asm__ __volatile__("jmp %0" ::"r"(Global::KernelEntryAddress),
-                       "a"(MULTIBOOT_EAX_MAGIC), "b"(header));
+  asm volatile("jmp %0"
+               :
+               : "r"(Global::KernelEntryAddress), "a"(MULTIBOOT_EAX_MAGIC),
+                 "b"(header)
+               :);
 
   __builtin_unreachable();
 }

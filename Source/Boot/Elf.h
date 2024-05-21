@@ -1,7 +1,5 @@
 #pragma once
 
-#include "EFI.h"
-
 #define ELF32_R_SYM(i)     ((i) >> 8)
 #define ELF32_R_TYPE(i)    ((i) & 0xFF)
 #define ELF32_R_INFO(s, t) (((s) << 8) + ((t) & 0xFF))
