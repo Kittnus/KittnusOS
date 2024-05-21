@@ -4,7 +4,7 @@
 #include "Global.h"
 #include "Graphics.h"
 #include "Memory.h"
-#include "StringUtils.h"
+#include "String.h"
 
 // TODO: Organize methods into files
 void RealignMemory()
@@ -170,7 +170,7 @@ void CreateMemoryMap(MultibootHeader* header)
 
 #define SetMemberString(member, string)                              \
   do {                                                               \
-    auto strLength = StringUtils::CalculateLength(string);           \
+    auto strLength = String::CalculateLength(string);                \
     Memory::Copy((void*)Global::KernelRoundedAddress, (void*)string, \
                  strLength);                                         \
     member = (UInt32)Global::KernelRoundedAddress;                   \

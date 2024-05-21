@@ -2,7 +2,7 @@
 
 #include "Types.h"
 
-class StringUtils
+class String
 {
 public:
   static wchar_t* Concat(const wchar_t* string1, const wchar_t* string2);

@@ -4,23 +4,30 @@ OUT_DIR := Binaries
 INT_DIR	:= Intermediate
 
 CC 		:= gcc
-CFLAGS 	:= -Wall -Werror -m64 -mabi=ms -ffreestanding -I$(SRC_DIR) -I$(VND_DIR)/efi
+CFLAGS 	:= -Wall -Werror -m64 -mabi=ms -ffreestanding
 
 all: $(OUT_DIR)/EFI/Boot/Bootx64.efi
 
+BOOT_INCLUDES = -I$(VND_DIR)/efi
 BOOT_OBJS := $(patsubst $(SRC_DIR)/Boot/%.cpp,$(INT_DIR)/Boot/%.o,$(wildcard $(SRC_DIR)/Boot/*.cpp))
 
 $(INT_DIR)/Boot/%.o: $(SRC_DIR)/Boot/%.cpp $(wildcard $(SRC_DIR)/Boot/%.h)
-	mkdir -p $(@D)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@echo "Compiling $<..."
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(BOOT_INCLUDES) -c $< -o $@
+	@echo "Compiled $< successfully."
 
 $(OUT_DIR)/EFI/Boot/Bootx64.efi: $(BOOT_OBJS)
-	mkdir -p $(@D)
-	$(CC) $(CFLAGS) -nostdlib -shared -Wl,-dll -Wl,--subsystem,10 -e UefiMain $^ -o $@
+	@echo "Linking Bootx64.efi..."
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(BOOT_INCLUDES) -nostdlib -shared -Wl,-dll -Wl,--subsystem,10 -e UefiMain $^ -o $@
+	@echo "Linked Bootx64.efi successfully."
 
 # $(OUT_DIR)/Kernel
 
 clean:
-	rm -rf $(OUT_DIR) $(INT_DIR)
+	@echo "Cleaning..."
+	@rm -rf $(OUT_DIR) $(INT_DIR)
+	@echo "Cleaned successfully."
 
 .PHONY: all clean

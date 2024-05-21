@@ -2,7 +2,7 @@
 
 #include "Global.h"
 #include "Memory.h"
-#include "StringUtils.h"
+#include "String.h"
 
 void FileSystem::Initialize()
 {
@@ -26,7 +26,7 @@ void FileSystem::Initialize()
 EFI_FILE_PROTOCOL* FileSystem::OpenFile(const wchar_t* path, UInt64 mode)
 {
   EFI_FILE_PROTOCOL* file;
-  auto errorMessage = StringUtils::Concat(L"Failed to open file: ", path);
+  auto errorMessage = String::Concat(L"Failed to open file: ", path);
   IF_ERROR(
       s_RootDirectory->Open(s_RootDirectory, &file, (CHAR16*)path, mode, 0),
       errorMessage);
