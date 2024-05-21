@@ -1,4 +1,4 @@
-#include "String.h"
+#include "StringUtils.h"
 
 wchar_t* StringUtils::Concat(const wchar_t* string1, const wchar_t* string2)
 {

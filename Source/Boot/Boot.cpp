@@ -1,8 +1,10 @@
+// TODO: Clean up includes
 #include "Elf.h"
 #include "FileSystem.h"
 #include "Global.h"
 #include "Graphics.h"
 #include "Memory.h"
+#include "StringUtils.h"
 
 // TODO: Organize methods into files
 void RealignMemory()
@@ -167,11 +169,14 @@ void CreateMemoryMap(MultibootHeader* header)
   header->MemUpper = upperMemory / 0x400;
 }
 
-#define SetMemberString(member, string)                            \
-  Memory::Copy((void*)Global::KernelRoundedAddress, (void*)string, \
-               sizeof(string) + 1);                                \
-  member = (UInt32)Global::KernelRoundedAddress;                   \
-  Global::KernelRoundedAddress += sizeof(string) + 1;
+#define SetMemberString(member, string)                              \
+  do {                                                               \
+    auto strLength = StringUtils::CalculateLength(string);           \
+    Memory::Copy((void*)Global::KernelRoundedAddress, (void*)string, \
+                 strLength);                                         \
+    member = (UInt32)Global::KernelRoundedAddress;                   \
+    Global::KernelRoundedAddress += strLength;                       \
+  } while (false)
 
 MultibootHeader* SetupMultibootHeader()
 {
@@ -182,8 +187,8 @@ MultibootHeader* SetupMultibootHeader()
 
   header->Flags |= MULTIBOOT_FLAGS_MEM;
 
-  SetMemberString(header->CmdLine, "");
-  SetMemberString(header->BootLoaderName, "Kittnus Neo");
+  SetMemberString(header->CmdLine, L"");
+  SetMemberString(header->BootLoaderName, L"Kittnus Neo");
 
   auto graphicsMode = Global::GraphicsOutput->Mode;
   auto graphicsInfo = graphicsMode->Info;

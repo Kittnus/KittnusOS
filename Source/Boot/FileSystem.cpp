@@ -1,7 +1,7 @@
 #include "FileSystem.h"
 
 #include "Global.h"
-#include "String.h"
+#include "StringUtils.h"
 
 void FileSystem::Initialize()
 {
