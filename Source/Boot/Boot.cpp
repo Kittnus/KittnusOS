@@ -54,9 +54,7 @@ void LoadKernel()
   {
     auto ptr = (UINT32*)(KERNEL_LOAD_ADDRESS + i);
     if (*ptr == MULTIBOOT_MAGIC)
-    {
       LoadElfKernel((Elf32Header*)KERNEL_LOAD_ADDRESS);
-    }
   }
 
   // TODO: Throw error when no multiboot header is found
