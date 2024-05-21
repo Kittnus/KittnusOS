@@ -114,8 +114,8 @@ section .bootstrap
   align 4
 
   # Kernel entry point
-  extern main
-  type main, @function
+  extern Main
+  type Main, @function
 
   global start_mb2
   type start_mb2, @function
@@ -125,15 +125,22 @@ section .bootstrap
 
   start_mb2:
     call initialize_multiboot2
-    jmp main
+    call Main
 
   # We still do this even though UEFI doesn't support multiboot 1
   start:
     call initialize_multiboot
     call setup_stack
+
+    mov eax, cr0
+    test eax, 0x80000000 # Check if paging is already enabled
+    jnz .skip_paging      # If it is, skip the paging setup
+
     call enable_paging
     call enter_long_mode
-    jmp main
+
+  .skip_paging:
+    call Main
   
   initialize_multiboot2:
     movl ecx, ebx
@@ -151,10 +158,6 @@ section .bootstrap
     ret
 
   enable_paging:
-    mov eax, cr0
-    test eax, 0x80000000 # Check if paging is already enabled
-    jnz main             # If so skip setup
-
     call setup_page_tables
     call enable_pae
     call enable_paging_flag
