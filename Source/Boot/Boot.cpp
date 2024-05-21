@@ -1,5 +1,16 @@
+#include "Boot.h"
+
 #include "Global.h"
 #include "Graphics.h"
+
+// TODO: Make a fucking memcpy function
+// TODO: Organize methods into files
+void RealignMemory()
+{
+  Global::KernelRoundedAddress =
+      (Global::KernelRoundedAddress & ~0xFFF)
+      + ((Global::KernelRoundedAddress & 0xFFF) ? 0x1000 : 0);
+}
 
 void LoadElfKernel(Elf32Header* header)
 {
@@ -31,9 +42,7 @@ void LoadElfKernel(Elf32Header* header)
   }
 
   Global::KernelEntryAddress = header->e_entry;
-  Global::KernelRoundedAddress =
-      (Global::KernelRoundedAddress & ~0xFFF)
-      + ((Global::KernelRoundedAddress & 0xFFF) ? 0x1000 : 0);
+  RealignMemory();
 }
 
 void LoadKernel()
@@ -106,6 +115,120 @@ void SetupFileSystem()
                                        &Global::RootDirectory);
 }
 
+void CreateMemoryMap(MultibootHeader* header)
+{
+  auto mmap = (MultibootMemoryMap*)Global::KernelRoundedAddress;
+  for (auto i = 0; i < 1024; i++)
+    *(UINT8*)(Global::KernelRoundedAddress + i) = 0;
+  header->MmapAddr = Global::KernelRoundedAddress;
+
+  // TODO: Error handling
+  UINTN mmapSize, mapKey, descriptorSize;
+  Global::BootServices->GetMemoryMap(&mmapSize, NULL, &mapKey, &descriptorSize,
+                                     NULL);
+
+  auto memory = (EFI_MEMORY_DESCRIPTOR*)Global::KernelRoundedAddress;
+  Global::KernelEntryAddress += mmapSize;
+  while ((UINTN)Global::KernelRoundedAddress & 0x3FF)
+    Global::KernelRoundedAddress++;
+
+  Global::BootServices->GetMemoryMap(&mmapSize, memory, &mapKey,
+                                     &descriptorSize, NULL);
+
+  UINTN upperMemory = 0;
+  int mmapEntries = mmapSize / descriptorSize;
+  for (int i = 0; i < mmapEntries; i++)
+  {
+    auto descriptor =
+        (EFI_MEMORY_DESCRIPTOR*)((UINTN)memory + i * descriptorSize);
+
+    mmap->Size = descriptorSize - sizeof(UINT32);
+    mmap->BaseAddr = descriptor->PhysicalStart;
+    mmap->Length = descriptor->NumberOfPages * 4096;
+
+    switch (descriptor->Type)
+    {
+    case EfiConventionalMemory:
+    case EfiLoaderCode:
+    case EfiLoaderData:
+    case EfiBootServicesCode:
+    case EfiBootServicesData:
+    case EfiRuntimeServicesCode:
+    case EfiRuntimeServicesData:
+      mmap->Type = 1; // Available memory
+      break;
+    case EfiReservedMemoryType:
+    case EfiUnusableMemory:
+    case EfiMemoryMappedIO:
+    case EfiMemoryMappedIOPortSpace:
+    case EfiPalCode:
+    case EfiACPIMemoryNVS:
+    case EfiACPIReclaimMemory:
+      mmap->Type = 2; // Reserved memory
+      break;
+    }
+
+    if (mmap->Type == 1 && mmap->BaseAddr >= 0x100000)
+      upperMemory += mmap->Length;
+
+    mmap = (MultibootMemoryMap*)((UINTN)mmap + mmap->Size + sizeof(UINT32));
+    memory = (EFI_MEMORY_DESCRIPTOR*)((UINTN)memory + descriptorSize);
+  }
+
+  header->MmapLength = (UINT32)((UINTN)mmap - header->MmapAddr);
+
+  header->MemLower = 0x400;
+  header->MemUpper = upperMemory / 0x400;
+}
+
+MultibootHeader* SetupMultibootHeader()
+{
+  auto header = (MultibootHeader*)Global::KernelRoundedAddress;
+  for (auto i = 0; i < sizeof(MultibootHeader); i++)
+    *(UINT8*)(Global::KernelRoundedAddress + i) =
+        *(UINT8*)(&Global::MultibootHeader + i);
+  Global::KernelRoundedAddress += sizeof(MultibootHeader);
+
+  header->Flags |= MULTIBOOT_FLAGS_MMAP;
+
+  auto cmdLine = "";
+  for (auto i = 0; i < sizeof(cmdLine) + 1; i++)
+    *(UINT8*)(Global::KernelRoundedAddress + i) = cmdLine[i];
+  header->CmdLine = Global::KernelRoundedAddress;
+  Global::KernelRoundedAddress += sizeof(cmdLine) + 1;
+
+  auto name = "Kitten Loader";
+  for (auto i = 0; i < sizeof(name) + 1; i++)
+    *(UINT8*)(Global::KernelRoundedAddress + i) = name[i];
+  header->BootLoaderName = Global::KernelRoundedAddress;
+  Global::KernelRoundedAddress += sizeof(name) + 1;
+
+  auto graphicsMode = Global::GraphicsOutput->Mode;
+  auto graphicsInfo = graphicsMode->Info;
+  header->FramebufferAddr = graphicsMode->FrameBufferBase;
+  header->FramebufferPitch = graphicsInfo->PixelsPerScanLine * 4;
+  header->FramebufferWidth = graphicsInfo->HorizontalResolution;
+  header->FramebufferHeight = graphicsInfo->VerticalResolution;
+  header->FramebufferBpp = 32;
+
+  RealignMemory();
+}
+
+void ExitBootServices()
+{
+  UINTN mapKey;
+  Global::BootServices->GetMemoryMap(NULL, NULL, &mapKey, NULL, NULL);
+  Global::BootServices->ExitBootServices(Global::ImageHandle, mapKey);
+}
+
+void RunKernel(MultibootHeader* header)
+{
+  __asm__ __volatile__("jmp %0" ::"r"(Global::KernelEntryAddress),
+                       "a"(MULTIBOOT_EAX_MAGIC), "b"(header));
+
+  __builtin_unreachable();
+}
+
 void Boot()
 {
   // * Think about using a watchdog timer to reset the system if the kernel hangs
@@ -116,28 +239,12 @@ void Boot()
 
   LoadKernel();
 
-  auto header = (MultibootHeader*)Global::KernelRoundedAddress;
-  for (UINTN i = 0; i < sizeof(MultibootHeader); i++)
-    *(UINT8*)(Global::KernelRoundedAddress + i) =
-        *(UINT8*)(&Global::MultibootHeader + i);
-  Global::KernelRoundedAddress += sizeof(MultibootHeader);
+  auto header = SetupMultibootHeader();
 
-  header->Flags |= MULTIBOOT_FLAGS_MMAP;
+  CreateMemoryMap(header);
 
-  
-
-  // Get upper memory
-
-  header->MemLower = 0x400;
-  header->MemUpper = upperMemory / 1024;
-  
-  auto graphicsMode = Global::GraphicsOutput->Mode;
-  auto graphicsInfo = graphicsMode->Info;
-  header->FramebufferAddr = graphicsMode->FrameBufferBase;
-  header->FramebufferPitch = graphicsInfo->PixelsPerScanLine * 4;
-  header->FramebufferWidth = graphicsInfo->HorizontalResolution;
-  header->FramebufferHeight = graphicsInfo->VerticalResolution;
-  header->FramebufferBpp = 32;
+  ExitBootServices();
+  RunKernel(header);
 }
 
 void DisplayCountDown()

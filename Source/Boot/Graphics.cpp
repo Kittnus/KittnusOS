@@ -12,7 +12,7 @@ void Graphics::Initialize()
   // TODO: Better error handling
   EFI_GUID graphicsOutputProtocolGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
   Global::BootServices->LocateHandleBuffer(
-      ByProtocol, &graphicsOutputProtocolGuid, NULL, nullptr, &graphicsHandles);
+      ByProtocol, &graphicsOutputProtocolGuid, NULL, NULL, &graphicsHandles);
   Global::BootServices->HandleProtocol(graphicsHandles[0],
                                        &graphicsOutputProtocolGuid,
                                        (void**)&Global::GraphicsOutput);

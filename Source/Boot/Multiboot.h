@@ -2,7 +2,9 @@
 
 #define PACKED __attribute__((packed))
 
-#define MULTIBOOT_MAGIC             0x1BADB002
+#define MULTIBOOT_MAGIC     0x1BADB002
+#define MULTIBOOT_EAX_MAGIC 0x2BADB002
+
 #define MULTIBOOT_FLAGS_MEM         0x1
 #define MULTIBOOT_FLAGS_DEVICE      0x2
 #define MULTIBOOT_FLAGS_CMDLINE     0x4
