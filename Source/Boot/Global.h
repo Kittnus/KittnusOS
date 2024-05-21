@@ -1,27 +1,17 @@
 #pragma once
 
-#define EFI_PLATFORM EFI_ARCH_X64
-#include <efi.h>
-#include <protocol/efi-gop.h>
-#include <protocol/efi-lip.h>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
-#include <protocol/efi-sfsp.h>
-#pragma GCC diagnostic pop
-
-#define NULL 0
-
-#include "Elf.h"
-#include "Memory.h"
+#include "EfiMacros.h"
+#include "Graphics.h"
 #include "Multiboot.h"
+#include "Types.h"
 
 class Global
 {
 public:
   static inline MultibootHeader MultibootHeader;
 
-  static inline UINTN KernelEntryAddress;
-  static inline UINTN KernelRoundedAddress;
+  static inline UInt64 KernelEntryAddress;
+  static inline UInt64 KernelRoundedAddress;
 
   static inline EFI_SYSTEM_TABLE* SystemTable;
   static inline EFI_HANDLE ImageHandle;

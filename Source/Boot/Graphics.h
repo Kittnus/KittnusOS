@@ -9,7 +9,9 @@ public:
   static void Initialize();
 
   static void Print(const wchar_t* string);
+  static void Print(UInt64 value);
   static void PrintLn(const wchar_t* string);
+  static void PrintLn(UInt64 value);
 
   static void ClearScreen();
 };

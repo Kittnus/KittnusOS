@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Types.h"
+
 #define PACKED __attribute__((packed))
 
 #define MULTIBOOT_MAGIC     0x1BADB002
@@ -20,62 +22,62 @@
 
 struct PACKED MultibootHeader
 {
-  UINT32 Flags;
+  UInt32 Flags;
 
-  UINT32 MemLower;
-  UINT32 MemUpper;
+  UInt32 MemLower;
+  UInt32 MemUpper;
 
-  UINT32 BootDevice;
+  UInt32 BootDevice;
 
-  UINT32 CmdLine;
+  UInt32 CmdLine;
 
-  UINT32 ModsCount;
-  UINT32 ModsAddr;
+  UInt32 ModsCount;
+  UInt32 ModsAddr;
 
-  UINT32 Num;
-  UINT32 Size;
-  UINT32 Addr;
-  UINT32 Shndx;
+  UInt32 Num;
+  UInt32 Size;
+  UInt32 Addr;
+  UInt32 Shndx;
 
-  UINT32 MmapLength;
-  UINT32 MmapAddr;
+  UInt32 MmapLength;
+  UInt32 MmapAddr;
 
-  UINT32 DrivesLength;
-  UINT32 DrivesAddr;
+  UInt32 DrivesLength;
+  UInt32 DrivesAddr;
 
-  UINT32 ConfigTable;
+  UInt32 ConfigTable;
 
-  UINT32 BootLoaderName;
+  UInt32 BootLoaderName;
 
-  UINT32 ApmTable;
+  UInt32 ApmTable;
 
-  UINT32 VbeControlInfo;
-  UINT32 VbeModeInfo;
-  UINT32 VbeMode;
-  UINT32 VbeInterfaceSeg;
-  UINT32 VbeInterfaceOff;
-  UINT32 VbeInterfaceLen;
+  UInt32 VbeControlInfo;
+  UInt32 VbeModeInfo;
+  UInt32 VbeMode;
+  UInt32 VbeInterfaceSeg;
+  UInt32 VbeInterfaceOff;
+  UInt32 VbeInterfaceLen;
 
-  UINT32 FramebufferAddr;
-  UINT32 FramebufferPitch;
-  UINT32 FramebufferWidth;
-  UINT32 FramebufferHeight;
-  UINT8 FramebufferBpp;
-  UINT8 FramebufferType;
+  UInt32 FramebufferAddr;
+  UInt32 FramebufferPitch;
+  UInt32 FramebufferWidth;
+  UInt32 FramebufferHeight;
+  UInt8 FramebufferBpp;
+  UInt8 FramebufferType;
 };
 
 struct PACKED MultibootModule
 {
-  UINT32 ModStart;
-  UINT32 ModEnd;
-  UINT32 String;
-  UINT32 Reserved;
+  UInt32 ModStart;
+  UInt32 ModEnd;
+  UInt32 String;
+  UInt32 Reserved;
 };
 
 struct PACKED MultibootMemoryMap
 {
-  UINT32 Size;
-  UINT64 BaseAddr;
-  UINT64 Length;
-  UINT32 Type;
+  UInt32 Size;
+  UInt64 BaseAddr;
+  UInt64 Length;
+  UInt32 Type;
 };

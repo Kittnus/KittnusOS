@@ -1,7 +1,8 @@
+#include "Elf.h"
 #include "Global.h"
 #include "Graphics.h"
+#include "Memory.h"
 
-// TODO: Make a fucking memcpy function
 // TODO: Organize methods into files
 void RealignMemory()
 {
@@ -15,7 +16,10 @@ void LoadElfKernel(Elf32Header* header)
   if ((header->e_ident[0] != ELFMAG0 || header->e_ident[1] != ELFMAG1
        || header->e_ident[2] != ELFMAG2 || header->e_ident[3] != ELFMAG3)
       || header->e_type != ET_EXEC)
-    return; // TODO: Throw error
+  {
+    Graphics::PrintLn(L"Invalid ELF file");
+    while (true);
+  }
 
   for (UINTN i = 0; i < (UINT32)header->e_phentsize * header->e_phnum;
        i += header->e_phentsize)
@@ -48,8 +52,10 @@ void LoadKernel()
 #define KERNEL_LOAD_ADDRESS 0x4000000ULL // 64 MB offset
 
   EFI_FILE_PROTOCOL* kernelFile;
-  Global::RootDirectory->Open(Global::RootDirectory, &kernelFile,
-                              (CHAR16*)L"Kernel.elf", EFI_FILE_MODE_READ, 0);
+  IF_ERROR(Global::RootDirectory->Open(Global::RootDirectory, &kernelFile,
+                                       (CHAR16*)L"Kernel.elf",
+                                       EFI_FILE_MODE_READ, 0),
+           L"Failed to open Kernel.elf", true);
 
   EFI_PHYSICAL_ADDRESS address = KERNEL_LOAD_ADDRESS;
   EFI_ALLOCATE_TYPE type = AllocateAddress;
@@ -72,8 +78,7 @@ void LoadKernel()
 
 void FindACPITable()
 {
-  static const EFI_GUID acpi10TableGuid =
-      EFI_ACPI_10_TABLE_GUID;
+  static const EFI_GUID acpi10TableGuid = EFI_ACPI_10_TABLE_GUID;
   static const EFI_GUID acpi20TableGuid = EFI_ACPI_20_TABLE_GUID;
   EFI_GUID acpiTableGuids[] = { acpi10TableGuid, acpi20TableGuid };
   for (auto guid : acpiTableGuids)

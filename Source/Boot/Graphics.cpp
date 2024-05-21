@@ -34,9 +34,30 @@ void Graphics::Print(const wchar_t* string)
   Global::ConOut->OutputString(Global::ConOut, (CHAR16*)string);
 }
 
+void Graphics::Print(UInt64 value)
+{
+  wchar_t buffer[17];
+  buffer[16] = L'\0';
+
+  for (int i = 0; i < 16; i++)
+  {
+    auto nibble = value & 0xF;
+    buffer[15 - i] = nibble < 10 ? L'0' + nibble : L'A' + nibble - 10;
+    value >>= 4;
+  }
+
+  Print(buffer);
+}
+
 void Graphics::PrintLn(const wchar_t* string)
 {
   Print(string);
+  Print(L"\n");
+}
+
+void Graphics::PrintLn(UInt64 value)
+{
+  Print(value);
   Print(L"\n");
 }
 
