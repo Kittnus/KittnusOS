@@ -18,7 +18,9 @@ class Global
 {
 public:
   static inline MultibootHeader MultibootHeader;
+
   static inline UINTN KernelEntryAddress;
+  static inline UINTN KernelRoundedAddress;
 
   static inline EFI_SYSTEM_TABLE* SystemTable;
   static inline EFI_HANDLE ImageHandle;

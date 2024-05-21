@@ -8,7 +8,6 @@ void LoadElfKernel(Elf32Header* header)
       || header->e_type != ET_EXEC)
     return; // TODO: Throw error
 
-  UINTN entry = header->e_entry;
   for (UINTN i = 0; i < (UINT32)header->e_phentsize * header->e_phnum;
        i += header->e_phentsize)
   {
@@ -25,12 +24,16 @@ void LoadElfKernel(Elf32Header* header)
         *(UINT8*)(programHeader->p_vaddr + remaining) = 0;
         remaining++;
       }
-      if (programHeader->p_vaddr + programHeader->p_memsz > entry)
-        entry = programHeader->p_vaddr;
+      if (programHeader->p_vaddr + programHeader->p_memsz
+          > Global::KernelRoundedAddress)
+        Global::KernelRoundedAddress = programHeader->p_vaddr;
     }
   }
 
-  Global::KernelEntryAddress = entry;
+  Global::KernelEntryAddress = header->e_entry;
+  Global::KernelRoundedAddress =
+      (Global::KernelRoundedAddress & ~0xFFF)
+      + ((Global::KernelRoundedAddress & 0xFFF) ? 0x1000 : 0);
 }
 
 void LoadKernel()
@@ -110,7 +113,31 @@ void Boot()
 
   FindACPITable();
   SetupFileSystem();
+
   LoadKernel();
+
+  auto header = (MultibootHeader*)Global::KernelRoundedAddress;
+  for (UINTN i = 0; i < sizeof(MultibootHeader); i++)
+    *(UINT8*)(Global::KernelRoundedAddress + i) =
+        *(UINT8*)(&Global::MultibootHeader + i);
+  Global::KernelRoundedAddress += sizeof(MultibootHeader);
+
+  header->Flags |= MULTIBOOT_FLAGS_MMAP;
+
+  
+
+  // Get upper memory
+
+  header->MemLower = 0x400;
+  header->MemUpper = upperMemory / 1024;
+  
+  auto graphicsMode = Global::GraphicsOutput->Mode;
+  auto graphicsInfo = graphicsMode->Info;
+  header->FramebufferAddr = graphicsMode->FrameBufferBase;
+  header->FramebufferPitch = graphicsInfo->PixelsPerScanLine * 4;
+  header->FramebufferWidth = graphicsInfo->HorizontalResolution;
+  header->FramebufferHeight = graphicsInfo->VerticalResolution;
+  header->FramebufferBpp = 32;
 }
 
 void DisplayCountDown()

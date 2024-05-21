@@ -3,7 +3,7 @@
 void Global::Initialize(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE* systemTable)
 {
   MultibootHeader = {
-    MULTIBOOT_FLAGS_MEM | MULTIBOOT_FLAGS_CMDLINE | MULTIBOOT_FLAGS_MODS | MULTIBOOT_FLAGS_MMAP | MULTIBOOT_FLAGS_LOADER_NAME, // Flags
+    MULTIBOOT_FLAGS_MEM | MULTIBOOT_FLAGS_CMDLINE | MULTIBOOT_FLAGS_MMAP | MULTIBOOT_FLAGS_LOADER_NAME, // Flags
 
     0x100000, // MemLower
     0x640000, // MemUpper
@@ -12,7 +12,7 @@ void Global::Initialize(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE* systemTable)
 
     0, // CmdLine
 
-    1, // ModsCount
+    0, // ModsCount
     0, // ModsAddr
 
     0, // Num
@@ -46,7 +46,9 @@ void Global::Initialize(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE* systemTable)
     0, // FramebufferBpp
     0, // FramebufferType
   };
+
   KernelEntryAddress = 0;
+  KernelRoundedAddress = 0;
 
   SystemTable = systemTable;
   ImageHandle = imageHandle;
