@@ -46,6 +46,7 @@ void Global::Initialize(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE* systemTable)
     0, // FramebufferBpp
     0, // FramebufferType
   };
+  KernelEntryAddress = 0;
 
   SystemTable = systemTable;
   ImageHandle = imageHandle;
