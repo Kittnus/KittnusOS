@@ -2,17 +2,11 @@
 
 #include "EfiMacros.h"
 #include "Graphics.h"
-#include "Multiboot.h"
 #include "Types.h"
 
 class Global
 {
 public:
-  static inline MultibootHeader MultibootHeader;
-
-  static inline UInt64 KernelEntryAddress;
-  static inline UInt64 KernelRoundedAddress;
-
   static inline EFI_SYSTEM_TABLE* SystemTable;
   static inline EFI_HANDLE ImageHandle;
 

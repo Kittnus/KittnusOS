@@ -20,7 +20,7 @@
 #define MULTIBOOT_FLAGS_APM         0x400
 #define MULTIBOOT_FLAGS_VBE         0x800
 
-struct PACKED MultibootHeader
+struct MultibootHeader
 {
   UInt32 Flags;
 
@@ -64,20 +64,20 @@ struct PACKED MultibootHeader
   UInt32 FramebufferHeight;
   UInt8 FramebufferBpp;
   UInt8 FramebufferType;
-};
+} PACKED;
 
-struct PACKED MultibootModule
+struct MultibootModule
 {
   UInt32 ModStart;
   UInt32 ModEnd;
   UInt32 String;
   UInt32 Reserved;
-};
+} PACKED;
 
-struct PACKED MultibootMemoryMap
+struct MultibootMemoryMap
 {
   UInt32 Size;
   UInt64 BaseAddr;
   UInt64 Length;
   UInt32 Type;
-};
+} PACKED;
