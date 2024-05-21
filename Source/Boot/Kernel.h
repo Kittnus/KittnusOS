@@ -22,7 +22,7 @@ private:
   static void Load();
   static void LoadElf(Elf32Header* elfHeader);
 
-  static void InitializeEmptyMultiboot();
+  static void InitializeMultiboot();
   static void SetupMultiboot();
 
   static void CreateMemoryMap();

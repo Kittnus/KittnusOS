@@ -7,7 +7,7 @@
 #include "Memory.h"
 #include "String.h"
 
-void ExitBootServices()
+void ExitBS()
 {
   UInt64 mapKey;
   Global::BootServices->GetMemoryMap(NULL, NULL, &mapKey, NULL, NULL);
@@ -24,7 +24,7 @@ void Boot()
 
   Kernel::Initialize();
 
-  ExitBootServices();
+  ExitBS();
   Kernel::Execute();
 }
 
