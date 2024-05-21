@@ -184,7 +184,7 @@ void Kernel::SetupMultiboot()
   SET_MB_MEMBER_STRING(header->CmdLine, L"");
   SET_MB_MEMBER_STRING(header->BootLoaderName, L"Kittnus Neo");
 
-  auto graphicsMode = Global::GraphicsOutput->Mode;
+  auto graphicsMode = Graphics::GetMode();
   auto graphicsInfo = graphicsMode->Info;
   header->FramebufferAddr = graphicsMode->FrameBufferBase;
   header->FramebufferPitch = graphicsInfo->PixelsPerScanLine * 4;

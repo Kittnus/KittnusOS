@@ -66,3 +66,8 @@ void Graphics::PrintLn(UInt64 value)
 
 // TODO: Clear the screen using GOP
 void Graphics::ClearScreen() { Global::ConOut->ClearScreen(Global::ConOut); }
+
+EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE* Graphics::GetMode()
+{
+  return s_GraphicsOutput->Mode;
+}

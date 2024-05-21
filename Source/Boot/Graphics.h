@@ -1,5 +1,6 @@
 #pragma once
 
+#include "EfiMacros.h"
 #include "Types.h"
 
 class Graphics
@@ -9,6 +10,7 @@ private:
   static inline int s_CenterX, s_CenterY;
 
   static inline EFI_GRAPHICS_OUTPUT_PROTOCOL* s_GraphicsOutput;
+
 public:
   static void Initialize();
 
@@ -18,4 +20,6 @@ public:
   static void PrintLn(UInt64 value);
 
   static void ClearScreen();
+
+  static EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE* GetMode();
 };
