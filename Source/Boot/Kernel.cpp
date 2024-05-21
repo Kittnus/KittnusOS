@@ -72,7 +72,7 @@ void Kernel::Load()
   EFI_PHYSICAL_ADDRESS address = KERNEL_LOAD_ADDRESS;
   EFI_ALLOCATE_TYPE type = AllocateAddress;
   EFI_MEMORY_TYPE memoryType = EfiLoaderData;
-  auto pages = 0x2000ULL; // 8 KB
+  auto pages = 0x2000ULL; // 8 KiB
   Global::BootServices->AllocatePages(type, memoryType, pages, &address);
 
   auto kernelSize = 0ULL;
