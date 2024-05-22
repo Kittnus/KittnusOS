@@ -5,7 +5,7 @@ INT_DIR	:= Intermediate
 
 CC 			:= gcc
 AS 			:= nasm
-CFLAGS 	:= -Wall -Werror -m64 -mabi=ms -ffreestanding -mno-red-zone -nostdlib -fno-omit-frame-pointer -I$(SRC_DIR)/Common
+CFLAGS 	:= -Wall -Werror -m64 -mabi=ms -ffreestanding -mno-red-zone -nostdlib -fno-omit-frame-pointer -fPIC -I$(SRC_DIR)/Common
 
 all: $(OUT_DIR)/EFI/Boot/Bootx64.efi $(OUT_DIR)/Kernel.elf
 
@@ -41,10 +41,12 @@ $(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.cpp $(wildcard $(SRC_DIR)/Kernel/%.h)
 	$(CC) $(CFLAGS) -c $< -o $@
 	@echo "Compiled $< successfully."
 
+
+# Won't work on Windows, you'll get the infamous PE operation on non-PE file error cuz ld sucks
 $(OUT_DIR)/Kernel.elf: $(KERNEL_ASMOBJS) $(KERNEL_OBJS)
 	@echo "Linking Kernel.elf..."
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) $(KERNEL_CFLAGS) $^ -o $@
+	$(CC) $(CFLAGS) $(KERNEL_CFLAGS) $^ -o $@ 
 	@echo "Linked Kernel.elf successfully."
 
 clean:
