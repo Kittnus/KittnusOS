@@ -21,7 +21,7 @@ $(INT_DIR)/Boot/%.o: $(SRC_DIR)/Boot/%.cpp $(wildcard $(SRC_DIR)/Boot/%.h)
 $(OUT_DIR)/EFI/Boot/Bootx64.efi: $(BOOT_OBJS)
 	@echo "Linking Bootx64.efi..."
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) $(BOOT_CFLAGS) -shared -Wl,-dll -Wl,--subsystem,10 -e UefiMain $^ -o $@
+	$(CC) $(CFLAGS) $(BOOT_CFLAGS) -shared -Wl,-dll -e UefiMain $^ -o $@
 	@echo "Linked Bootx64.efi successfully."
 
 KERNEL_CFLAGS  := -T $(SRC_DIR)/Kernel/Linker.ld -O2 -g -static -pedantic -mfsgsbase -fPIE -mgeneral-regs-only
