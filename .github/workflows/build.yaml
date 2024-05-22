@@ -1,0 +1,24 @@
+name: Build the OS
+   
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up NASM
+      uses: ilammy/setup-nasm@v1.5.1
+  
+    - name: Compile
+      run: make
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: Kittnus Root
+        path: Binaries/
