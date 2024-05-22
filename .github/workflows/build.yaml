@@ -10,9 +10,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Set up NASM
-      uses: ilammy/setup-nasm@v1.5.1
   
     - name: Compile
       run: make
