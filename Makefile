@@ -41,7 +41,6 @@ $(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.cpp $(wildcard $(SRC_DIR)/Kernel/%.h)
 	$(CC) $(CFLAGS) -c $< -o $@
 	@echo "Compiled $< successfully."
 
-
 # Won't work on Windows, you'll get the infamous PE operation on non-PE file error cuz ld sucks
 $(OUT_DIR)/Kernel.elf: $(KERNEL_ASMOBJS) $(KERNEL_OBJS)
 	@echo "Linking Kernel.elf..."
