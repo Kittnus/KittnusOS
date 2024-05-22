@@ -9,7 +9,7 @@ CFLAGS 	:= -Wall -Werror -m64 -mabi=ms -ffreestanding -mno-red-zone -nostdlib -f
 
 all: $(OUT_DIR)/EFI/Boot/Bootx64.efi $(OUT_DIR)/Kernel.elf
 
-BOOT_CFLAGS := -I$(VND_DIR)/efi
+BOOT_CFLAGS := -I$(VND_DIR)/efi -DEFI_PLATFORM=EFI_ARCH_X64
 BOOT_OBJS 	:= $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*.cpp))
 
 $(INT_DIR)/Boot/%.o: $(SRC_DIR)/Boot/%.cpp $(wildcard $(SRC_DIR)/Boot/%.h)
@@ -32,7 +32,7 @@ KERNEL_OBJS 	 += $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/
 $(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.asm
 	@echo "Assembling $<..."
 	@mkdir -p $(@D)
-	${AS} -c $< -o $@
+	${AS} -f elf64 $< -o $@
 	@echo "Assembled $< successfully."
 
 $(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.cpp $(wildcard $(SRC_DIR)/Kernel/%.h)

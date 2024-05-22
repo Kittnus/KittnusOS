@@ -1,6 +1,5 @@
 #include "Graphics.h"
 
-#define EFI_PLATFORM EFI_ARCH_X64
 #include <efi.h>
 #include <protocol/efi-gop.h>
 #include <protocol/efi-lip.h>

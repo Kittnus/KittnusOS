@@ -76,7 +76,7 @@ section .multiboot
   multiboot2_header_end:
 
 ; Stack section
-section .stack, "aw", @nobits
+section .stack nobits alloc noexec write
   stack_bottom:
     resb 16384 ; 16 KiB
     global stack_top
@@ -87,7 +87,7 @@ section .bootstrap
   align 4
 
   ; Kernel entry point
-  extern Main
+  extern KernelEntry
 
   global start
 
@@ -95,4 +95,6 @@ section .bootstrap
   start:
     mov ecx, ebx
     add ecx, 8
-    call Main
+    call KernelEntry
+
+section .data

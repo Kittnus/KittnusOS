@@ -65,20 +65,20 @@ void Kernel::RealignMemory()
 
 void Kernel::Load()
 {
-  constexpr UInt64 KERNEL_LOAD_ADDRESS = 0x4000000ULL; // 64 MB offset
+  constexpr UInt64 KERNEL_LOAD_ADDRESS = 0x4000000; // 64 MB offset
 
   auto kernelFile = FileSystem::OpenFile(L"Kernel.elf", EFI_FILE_MODE_READ);
 
   EFI_PHYSICAL_ADDRESS address = KERNEL_LOAD_ADDRESS;
   EFI_ALLOCATE_TYPE type = AllocateAddress;
   EFI_MEMORY_TYPE memoryType = EfiLoaderData;
-  auto pages = 0x2000ULL; // 8 KiB
+  UInt64 pages = 0x2000; // 8 KiB
   Global::BootServices->AllocatePages(type, memoryType, pages, &address);
 
-  auto kernelSize = 0ULL;
+  UInt64 kernelSize = 0;
   kernelFile->Read(kernelFile, &kernelSize, (void*)KERNEL_LOAD_ADDRESS);
 
-  for (auto i = 0ULL; i < 0x2000; i += 4)
+  for (UInt64 i = 0; i < 0x2000; i += 4)
   {
     auto ptr = (UInt32*)(KERNEL_LOAD_ADDRESS + i);
     if (*ptr == MULTIBOOT_MAGIC) LoadElf((Elf32Header*)KERNEL_LOAD_ADDRESS);
@@ -98,7 +98,7 @@ void Kernel::LoadElf(Elf32Header* elfHeader)
     while (true);
   }
 
-  for (auto i = 0ull; i < (UInt32)elfHeader->e_phentsize * elfHeader->e_phnum;
+  for (UInt64 i = 0; i < (UInt32)elfHeader->e_phentsize * elfHeader->e_phnum;
        i += elfHeader->e_phentsize)
   {
     auto programHeader =

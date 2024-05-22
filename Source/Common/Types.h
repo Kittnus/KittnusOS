@@ -2,12 +2,12 @@
 
 #define NULL 0
 
-using Int8 = signed char;
-using Int16 = signed short;
-using Int32 = signed int;
-using Int64 = signed long long;
+using Int8 = __INT8_TYPE__;
+using Int16 = __INT16_TYPE__;
+using Int32 = __INT32_TYPE__;
+using Int64 = __INT64_TYPE__;
 
-using UInt8 = unsigned char;
-using UInt16 = unsigned short;
-using UInt32 = unsigned int;
-using UInt64 = unsigned long long;
+using UInt8 = __UINT8_TYPE__;
+using UInt16 = __UINT16_TYPE__;
+using UInt32 = __UINT32_TYPE__;
+using UInt64 = __UINT64_TYPE__;
