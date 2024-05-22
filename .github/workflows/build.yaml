@@ -15,7 +15,7 @@ jobs:
       run: git submodule update --init --recursive
   
     - name: Compile
-      run: make
+      run: make # Make this work because rn linking wont work on linux
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v2
