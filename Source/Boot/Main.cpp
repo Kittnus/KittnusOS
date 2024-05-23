@@ -43,7 +43,7 @@ void DisplayCountDown()
   Graphics::ClearScreen();
 }
 
-extern "C" EFI_STATUS EFIAPI UefiMain(EFI_HANDLE imageHandle,
+extern "C" EFI_STATUS EFIAPI efi_main(EFI_HANDLE imageHandle,
                                       EFI_SYSTEM_TABLE* systemTable)
 {
   Global::Initialize(imageHandle, systemTable);
