@@ -4,6 +4,8 @@ section .multiboot
   extern end
   extern phys
 
+  ; TODO: Add MultiBoot 1 support
+
   ; Multiboot 2 header
   MB2_MAGIC           equ 0xE85250D6
   MB2_ARCH            equ 0
