@@ -30,7 +30,7 @@ LDFLAGS	:= -nostdlib -znocombreloc -shared -Bsymbolic -L /usr/lib
 all: $(OUT_DIR)/EFI/Boot/Bootx64.efi $(OUT_DIR)/Kernel.elf
 
 BOOT_CFLAGS 	:= -I$(VND_DIR)/efi -DEFI_PLATFORM=EFI_ARCH_X64
-BOOT_LDFLAGS	:= -T /usr/lib/elf_x86_64_efi.lds -lefi -lgnuefi /usr/lib/crt0-efi-x86_64.o 
+BOOT_LDFLAGS	:= -T /usr/lib/elf_x86_64_efi.lds
 BOOT_SECTIONS := -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc
 BOOT_OBJS 		:= $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*.cpp))
 
@@ -43,7 +43,7 @@ $(INT_DIR)/Boot/%.o: $(SRC_DIR)/Boot/%.cpp $(wildcard $(SRC_DIR)/Boot/%.h)
 $(INT_DIR)/Boot/Bootx64.so: $(BOOT_OBJS)
 	$(call print_action, "Linking Bootx64.so...")
 	@mkdir -p $(@D)
-	$(LD) $(LDFLAGS) $(BOOT_LDFLAGS) $^ -o $@
+	$(LD) $(LDFLAGS) $(BOOT_LDFLAGS) $^ /usr/lib/crt0-efi-x86_64.o -o $@ -lefi -lgnuefi
 	$(call print_minor_success, "Linked Bootx64.so successfully.")
 
 $(OUT_DIR)/EFI/Boot/Bootx64.efi: $(INT_DIR)/Boot/Bootx64.so
