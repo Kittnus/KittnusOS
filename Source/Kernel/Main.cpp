@@ -1,7 +1,10 @@
-#include "Multiboot.h"
+#include "Types.h"
 
-extern "C" int KernelEntry(MultibootHeader* header, UInt32 magic, void* esp, UInt64 base)
+extern "C" void KernelEntry(UInt32 funny)
 {
-
-  return 0;
+  while (funny > 0)
+  {
+    funny--;
+    for (int i = 0; i < 100000000; i++);
+  }
 }

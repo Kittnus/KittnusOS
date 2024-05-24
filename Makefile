@@ -61,10 +61,16 @@ $(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.cpp $(wildcard $(SRC_DIR)/Kernel/%.h)
 	$(CC) $(CFLAGS) -c $< -o $@
 	$(call print_minor_success, "Compiled $< successfully.")
 
-$(OUT_DIR)/Kernel.bin: $(KERNEL_ASMOBJS) $(KERNEL_OBJS)
+$(INT_DIR)/Kernel/Kernel.so: $(KERNEL_ASMOBJS) $(KERNEL_OBJS)
+	$(call print_action, "Linking Kernel.so...")
+	@mkdir -p $(@D)
+	$(LD) $(KERNEL_LDFLAGS) -o $@ $^
+	$(call print_success, "Linked Kernel.so successfully.")
+
+$(OUT_DIR)/Kernel.bin: $(INT_DIR)/Kernel/Kernel.so
 	$(call print_action, "Linking Kernel.bin...")
 	@mkdir -p $(@D)
-	$(LD) $(KERNEL_LDFLAGS) $^ -o $@
+	objcopy --target=binary $< $@
 	$(call print_success, "Linked Kernel.bin successfully.")
 
 clean:
