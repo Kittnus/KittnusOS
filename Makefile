@@ -70,7 +70,7 @@ $(INT_DIR)/Kernel/Kernel.so: $(KERNEL_ASMOBJS) $(KERNEL_OBJS)
 $(OUT_DIR)/Kernel.bin: $(INT_DIR)/Kernel/Kernel.so
 	$(call print_action, "Linking Kernel.bin...")
 	@mkdir -p $(@D)
-	objcopy --target=binary $< $@
+	objcopy -O binary $< $@
 	$(call print_success, "Linked Kernel.bin successfully.")
 
 clean:
