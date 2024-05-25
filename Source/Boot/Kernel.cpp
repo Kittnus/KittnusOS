@@ -26,8 +26,6 @@ void Kernel::Execute()
   while (true);
 }
 
-void Kernel::Load() { s_KernelEntry = LoadFile(L"Kernel.bin"); }
-
 UInt64 Kernel::LoadFile(const wchar_t* name)
 {
   auto file = FileSystem::OpenFile(name, EFI_FILE_MODE_READ);
