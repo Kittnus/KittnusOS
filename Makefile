@@ -44,7 +44,7 @@ $(OUT_DIR)/EFI/Boot/Bootx64.efi: $(BOOT_OBJS)
 	$(CC) $(CFLAGS) $(BOOT_CFLAGS) -shared -Wl,-dll -Wl,--subsystem,10 -e efi_main $^ -o $@
 	$(call print_success, "Converted Bootx64.so to Bootx64.efi successfully.")
 
-KERNEL_LDFLAGS  := -O2 -g -static -fPIC -shared -Bsymbolic -nostdlib -e start
+KERNEL_LDFLAGS  := -O2 -g -static -fPIC -shared -Bsymbolic -nostdlib -e KernelEntry
 KERNEL_ASMOBJS := $(patsubst $(SRC_DIR)%.asm,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.asm))
 KERNEL_OBJS 	  = $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.cpp))
 KERNEL_OBJS 	 += $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*/*.cpp))

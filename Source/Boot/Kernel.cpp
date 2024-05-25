@@ -5,47 +5,33 @@
 #include "Memory.h"
 #include "String.h"
 
-#define SET_MB_MEMBER_STRING(member, string)                           \
-  do {                                                                 \
-    auto strLength = String::CalculateLength(string);                  \
-    Memory::Copy((void*)s_KernelEndRounded, (void*)string, strLength); \
-    member = (UInt32)s_KernelEndRounded;                               \
-    s_KernelEndRounded += strLength;                                   \
-  } while (false)
-
 void Kernel::Initialize()
 {
-  Load();
+  s_KernelEntry = LoadFile(L"Kernel.bin");
 
   // Create the memory map
 }
 
 void Kernel::Execute()
 {
-  typedef void (*KernelEntry)(UInt32);
-  ((KernelEntry)s_KernelEntry)(3);
+  // TODO: Remove debug code
+  Graphics::PrintLn(L"Prepare to execute kernel entry point in 3 seconds...");
+  Global::BootServices->Stall(3 * 1000 * 1000);
+  Graphics::PrintLn(L"Executing kernel entry point...");
+  // TODO: End debug code
 
-  Graphics::PrintLn(L"Kernel returned. Halting system...");
+  typedef void (*KernelEntry)();
+  ((KernelEntry)s_KernelEntry)();
+
   while (true);
 }
 
-void Kernel::Load()
-{
-  // constexpr UInt64 KERNEL_LOAD_ADDRESS = 0x4000000; // 64 MB offset
+void Kernel::Load() { s_KernelEntry = LoadFile(L"Kernel.bin"); }
 
-  auto kernelFile = FileSystem::OpenFile(L"Kernel.bin", EFI_FILE_MODE_READ);
-  s_KernelEntry = FindEntryPoint(kernelFile);
-}
-
-// We call this everytime we allocate memory to make sure it's aligned to 4 KiB
-void Kernel::RealignMemory()
+UInt64 Kernel::LoadFile(const wchar_t* name)
 {
-  s_KernelEndRounded = (s_KernelEndRounded & ~0xFFF)
-                       + ((s_KernelEndRounded & 0xFFF) ? 0x1000 : 0);
-}
+  auto file = FileSystem::OpenFile(name, EFI_FILE_MODE_READ);
 
-UInt64 Kernel::FindEntryPoint(EFI_FILE_PROTOCOL* file)
-{
   UInt64 fileSize = 0;
   file->SetPosition(file, 0xFFFFFFFFFFFFFFFFULL);
   file->GetPosition(file, &fileSize);
@@ -55,8 +41,5 @@ UInt64 Kernel::FindEntryPoint(EFI_FILE_PROTOCOL* file)
   Memory::Allocate(fileSize, &fileBuffer);
   file->Read(file, &fileSize, fileBuffer);
 
-  auto entryPoint = (UInt8*)fileBuffer;
-  (void)entryPoint;
-
-  return 0;
+  return (UInt64)fileBuffer;
 }

@@ -1,10 +1,9 @@
+#include "Console.h"
 #include "Types.h"
 
-extern "C" void KernelEntry(UInt32 funny)
+extern "C" void KernelEntry()
 {
-  while (funny > 0)
-  {
-    funny--;
-    for (int i = 0; i < 100000000; i++);
-  }
+  Console::PrintLn("Hello, KittnusOS!");
+
+  while (true);
 }
