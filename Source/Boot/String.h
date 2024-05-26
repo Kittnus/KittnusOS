@@ -1,11 +1,85 @@
 #pragma once
 
 #include "Types.h"
+#include "Memory.h"
 
 class String
 {
 public:
-  static wchar_t* Concat(const wchar_t* string1, const wchar_t* string2);
+  template<typename T>
+  static T* NumToHex(UInt64 value)
+  {
+    constexpr auto bufferSize = 16;
 
-  static UInt64 CalculateLength(const wchar_t* string);
+    T* buffer;
+    Memory::Allocate(bufferSize + 1, (void**)&buffer); // 16 chars + terminator
+    buffer[bufferSize] = (T)'\0';
+
+    for (int i = 0; i < 16; i++)
+    {
+      auto nibble = value & 0xF;
+      buffer[15 - i] = nibble < 10 ? (T)'0' + nibble : (T)'A' + nibble - 10;
+      value >>= 4;
+    }
+
+    return buffer;
+  }
+
+  template<typename T>
+  static T* NumToDec(UInt64 value)
+  {
+    constexpr auto bufferSize = 20;
+
+    T* buffer;
+    Memory::Allocate(bufferSize + 1, (void**)&buffer); // 20 chars + terminator
+    buffer[bufferSize] = (T)'\0';
+
+    auto index = bufferSize - 1;
+    do {
+      buffer[index--] = (T)'0' + value % 10;
+      value /= 10;
+    } while (value);
+
+    return buffer + index + 1;
+  }
+
+  template<typename T>
+  static T* Concat(const T* string1, const T* string2)
+  {
+    auto length1 = CalculateLength(string1);
+    auto length2 = CalculateLength(string2);
+    auto length = length1 + length2;
+
+    char* result;
+    Memory::Allocate(length, (void**)&result);
+
+    auto destination = result;
+    while (*string1) *destination++ = *string1++;
+    while (*string2) *destination++ = *string2++;
+    *destination = 0;
+
+    return result;
+  }
+ 
+  template<typename T, typename F>
+  static T* Cast(const F* string)
+  {
+    auto length = CalculateLength(string);
+    T* result;
+    Memory::Allocate(length, (void**)&result);
+
+    auto destination = result;
+    while (*string) *destination++ = (T)*string++;
+    *destination = (T)'\0';
+
+    return result;
+  }
+
+  template<typename T>
+  static UInt64 CalculateLength(const T* string)
+  {
+    UInt64 length = 0;
+    while (*string++) length++;
+    return length;
+  }
 };

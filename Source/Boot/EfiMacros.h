@@ -9,9 +9,9 @@
 #define EFI_CHECK(function, message)                       \
   if (EFI_STATUS status = function; status != EFI_SUCCESS) \
   {                                                        \
-    Graphics::Print(L"Error: ");                           \
+    Graphics::Print("Error: ");                            \
     Graphics::Print(message);                              \
-    Graphics::Print(L": ");                                \
-    Graphics::PrintLn(status);                             \
+    Graphics::Print(": ");                                 \
+    Graphics::PrintHexLn(status);                          \
     while (true);                                          \
   }

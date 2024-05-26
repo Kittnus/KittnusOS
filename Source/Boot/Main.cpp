@@ -1,6 +1,6 @@
+#include "Console.h"
 #include "FileSystem.h"
 #include "Global.h"
-#include "Graphics.h"
 #include "Kernel.h"
 
 void ExitBS()
@@ -23,16 +23,18 @@ void Boot()
 
 void DisplayCountDown()
 {
-  // TODO: Make this look better once Graphics uses GOP
+  // TODO: Make this look better once Console uses GOP
   for (int i = 3; i > 0; i--)
   {
     Graphics::ClearScreen();
-    Graphics::Print(L"Booting KittnusOS in ");
+    Graphics::PrintLn("Kittnus Neo Bootloader - Built on " __DATE__
+                      " at " __TIME__);
+    Graphics::Print("Booting KittnusOS in ");
 
-    auto character = (wchar_t)(L'0' + i);
+    auto character = (char)('0' + i);
     Graphics::Print(&character);
 
-    Graphics::PrintLn(L" seconds...");
+    Graphics::PrintLn(" seconds...");
 
     Global::BootServices->Stall(1 * 1000 * 1000);
   }
@@ -44,9 +46,7 @@ extern "C" EFI_STATUS EFIAPI efi_main(EFI_HANDLE imageHandle,
                                       EFI_SYSTEM_TABLE* systemTable)
 {
   Global::Initialize(imageHandle, systemTable);
-
   Graphics::Initialize();
-  Graphics::ClearScreen();
 
   DisplayCountDown();
   Boot();

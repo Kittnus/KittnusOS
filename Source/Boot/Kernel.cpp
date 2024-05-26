@@ -2,6 +2,7 @@
 
 #include "FileSystem.h"
 #include "Global.h"
+#include "Graphics.h"
 #include "Memory.h"
 #include "String.h"
 
@@ -15,13 +16,13 @@ void Kernel::Initialize()
 void Kernel::Execute()
 {
   // TODO: Remove debug code
-  Graphics::PrintLn(L"Prepare to execute kernel entry point in 3 seconds...");
-  Global::BootServices->Stall(3 * 1000 * 1000);
-  Graphics::PrintLn(L"Executing kernel entry point...");
+  Graphics::PrintLn("Executing kernel entry point...");
   // TODO: End debug code
 
   typedef void (*KernelEntry)();
-  ((KernelEntry)s_KernelEntry)();
+  auto kernelEntry = (KernelEntry)s_KernelEntry;
+
+  kernelEntry();
 
   while (true);
 }
