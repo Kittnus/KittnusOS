@@ -23,7 +23,6 @@ void Boot()
 
 void DisplayCountDown()
 {
-  // TODO: Make this look better once Console uses GOP
   for (int i = 3; i > 0; i--)
   {
     Graphics::ClearScreen();

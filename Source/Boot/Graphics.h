@@ -17,11 +17,24 @@ private:
   static inline UInt64 s_OffsetX = 0;
   static inline UInt64 s_OffsetY = 0;
 
-  static inline UInt32 s_TextColor = 0xFF2F8E7B; // Greenish Cyan
-  static inline UInt32 s_BackgroundColor = 0xFF000D16; // Dark Blueish Black
+  static const UInt32 c_DefaultTextColor = 0xFF2F8E7B; // Greenish Cyan
+  static const UInt32 c_DefaultBackgroundColor =
+      0xFF000D16; // Dark Blueish Black
+
+  static inline UInt32 s_TextColor = c_DefaultTextColor;
+  static inline UInt32 s_TextBackgroundColor = c_DefaultBackgroundColor;
+  static inline UInt32 s_BackgroundColor = c_DefaultBackgroundColor;
 
 public:
   static void Initialize();
+
+  // TODO: Make this scope based
+  static void SetTextColor(UInt32 color);
+  static void ResetTextColor();
+  static void SetTextBackgroundColor(UInt32 color);
+  static void ResetTextBackgroundColor();
+  static void SetBackgroundColor(UInt32 color);
+  static void ResetBackgroundColor();
 
   static void Print(const char* string);
   static void Print(UInt64 value);
@@ -35,8 +48,9 @@ public:
 private:
   static void FindGraphicsOutput();
 
+  static UInt32 GetPixel(UInt64 x, UInt64 y);
   static void SetPixel(UInt64 x, UInt64 y, UInt32 color);
-  static void DrawChar(char c, UInt64 x, UInt64 y);
 
+  static void DrawChar(char c, UInt64 x, UInt64 y);
   static void NewLine();
 };

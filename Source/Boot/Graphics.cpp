@@ -20,6 +20,35 @@ void Graphics::Initialize()
   s_ScreenHeight = info->VerticalResolution;
 }
 
+void Graphics::SetTextColor(UInt32 color) { s_TextColor = color; }
+
+void Graphics::ResetTextColor() { SetTextColor(c_DefaultTextColor); }
+
+void Graphics::SetTextBackgroundColor(UInt32 color)
+{
+  s_TextBackgroundColor = color;
+}
+
+void Graphics::ResetTextBackgroundColor()
+{
+  SetTextBackgroundColor(s_BackgroundColor);
+}
+
+void Graphics::SetBackgroundColor(UInt32 color)
+{
+  for (UInt64 y = 0; y < s_ScreenHeight; y++)
+    for (UInt64 x = 0; x < s_ScreenWidth; x++)
+      if (GetPixel(x, y) == s_BackgroundColor) SetPixel(x, y, color);
+  if (s_TextBackgroundColor == s_BackgroundColor) SetTextBackgroundColor(color);
+
+  s_BackgroundColor = color;
+}
+
+void Graphics::ResetBackgroundColor()
+{
+  SetBackgroundColor(c_DefaultBackgroundColor);
+}
+
 void Graphics::Print(const char* string)
 {
   while (*string)
@@ -101,6 +130,11 @@ void Graphics::FindGraphicsOutput()
   while (true);
 }
 
+UInt32 Graphics::GetPixel(UInt64 x, UInt64 y)
+{
+  return *(UInt32*)(s_FrameBufferBase + (y * s_ScreenWidth + x) * 4);
+}
+
 void Graphics::SetPixel(UInt64 x, UInt64 y, UInt32 color)
 {
   auto pixel = (UInt32*)(s_FrameBufferBase + (y * s_ScreenWidth + x) * 4);
@@ -113,7 +147,13 @@ void Graphics::DrawChar(char c, UInt64 x, UInt64 y)
 
   for (UInt64 i = 0; i < FONT_HEIGHT; i++)
     for (UInt64 j = 0; j < FONT_WIDTH; j++)
-      if (drawArray[i][j]) SetPixel(x + j, y + i, s_TextColor);
+    {
+      auto isTextPixel = drawArray[i][j];
+      if (s_TextBackgroundColor == s_BackgroundColor && !isTextPixel) continue;
+
+      auto color = isTextPixel ? s_TextColor : s_TextBackgroundColor;
+      SetPixel(x + j, y + i, color);
+    }
 }
 
 void Graphics::NewLine()
