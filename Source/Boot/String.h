@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Types.h"
 #include "Memory.h"
+#include "Types.h"
 
 class String
 {
@@ -9,16 +9,20 @@ public:
   template<typename T>
   static T* NumToHex(UInt64 value)
   {
-    constexpr auto bufferSize = 16;
+    constexpr auto bufferSize = 18;
 
     T* buffer;
-    Memory::Allocate(bufferSize + 1, (void**)&buffer); // 16 chars + terminator
+    Memory::Allocate(bufferSize + 1, (void**)&buffer); // 18 chars + terminator
     buffer[bufferSize] = (T)'\0';
 
-    for (int i = 0; i < 16; i++)
+    buffer[0] = (T)'0';
+    buffer[1] = (T)'x';
+
+    for (int i = 0; i < bufferSize - 2; i++)
     {
       auto nibble = value & 0xF;
-      buffer[15 - i] = nibble < 10 ? (T)'0' + nibble : (T)'A' + nibble - 10;
+      buffer[bufferSize - i - 1] =
+          nibble < 10 ? (T)'0' + nibble : (T)'A' + nibble - 10;
       value >>= 4;
     }
 
@@ -60,7 +64,7 @@ public:
 
     return result;
   }
- 
+
   template<typename T, typename F>
   static T* Cast(const F* string)
   {

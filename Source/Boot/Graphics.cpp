@@ -18,6 +18,8 @@ void Graphics::Initialize()
   auto info = mode->Info;
   s_ScreenWidth = info->HorizontalResolution;
   s_ScreenHeight = info->VerticalResolution;
+
+  ClearScreen();
 }
 
 void Graphics::SetTextColor(UInt32 color) { s_TextColor = color; }
