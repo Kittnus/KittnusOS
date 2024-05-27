@@ -11,7 +11,6 @@
   {                                                        \
     Graphics::SetTextColor(0xFFFFFFFF);                    \
     Graphics::SetTextBackgroundColor(0xFFFF0000);          \
-    Graphics::Print("Error: ");                            \
     Graphics::Print(message);                              \
     Graphics::Print(": ");                                 \
     Graphics::PrintHexLn(status);                          \
