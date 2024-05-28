@@ -24,6 +24,10 @@ void Kernel::Execute()
 
   kernelEntry();
 
+  // TODO: Remove debug code
+  Graphics::PrintLn("Kernel entry point returned.");
+  // TODO: End debug code
+
   while (true);
 }
 
