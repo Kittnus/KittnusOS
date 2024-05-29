@@ -5,7 +5,6 @@
 #include <protocol/efi-lip.h>
 #include <protocol/efi-sfsp.h>
 
-// TODO: Use color when GOP is implemented
 #define EFI_CHECK(function, message)                       \
   if (EFI_STATUS status = function; status != EFI_SUCCESS) \
   {                                                        \

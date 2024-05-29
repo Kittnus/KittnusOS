@@ -2,6 +2,7 @@
 
 #include "Console.h"
 #include "Global.h"
+#include "Macros.h"
 #include "Memory.h"
 #include "String.h"
 #include "Types.h"
@@ -110,14 +111,11 @@ void Graphics::FindGraphicsOutput()
   EFI_HANDLE* handleBuffer;
 
   EFI_GUID graphicsOutputProtocolGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
-  if (Global::BootServices->LocateHandleBuffer(
-          ByProtocol, &graphicsOutputProtocolGuid, NULL, &handlesCount,
-          &handleBuffer)
-      != EFI_SUCCESS)
-  {
-    Console::PrintLn(L"Failed to locate GOP handle buffer");
-    while (true);
-  }
+  CHECK_CONSOLE(Global::BootServices->LocateHandleBuffer(
+                    ByProtocol, &graphicsOutputProtocolGuid, NULL,
+                    &handlesCount, &handleBuffer)
+                    == EFI_SUCCESS,
+                "Failed to locate GOP handle buffer");
 
   for (UInt64 i = 0; i < handlesCount; i++)
     if (Global::BootServices->HandleProtocol(handleBuffer[i],
@@ -126,10 +124,7 @@ void Graphics::FindGraphicsOutput()
         == EFI_SUCCESS)
       break;
 
-  if (s_GraphicsOutput != NULL) return;
-
-  Console::PrintLn(L"Failed to locate GOP handle");
-  while (true);
+  CHECK_CONSOLE(s_GraphicsOutput, "Failed to locate GOP handle");
 }
 
 UInt32 Graphics::GetPixel(UInt64 x, UInt64 y)

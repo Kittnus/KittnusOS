@@ -26,7 +26,7 @@ define print_success
 	@echo "${LIGHT_GREEN}$1${RESET}"
 endef
 
-all: $(OUT_DIR)/EFI/Boot/Bootx64.efi $(OUT_DIR)/Kernel.bin
+all: $(OUT_DIR)/EFI/Boot/Bootx64.efi $(OUT_DIR)/Kernel.elf
 
 BOOT_CFLAGS 	:= -I$(VND_DIR)/efi -DEFI_PLATFORM=EFI_ARCH_X64
 BOOT_SECTIONS := -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc
@@ -67,11 +67,11 @@ $(INT_DIR)/Kernel/Kernel.so: $(KERNEL_ASMOBJS) $(KERNEL_OBJS)
 	$(LD) $(KERNEL_LDFLAGS) -o $@ $^
 	$(call print_success, "Linked Kernel.so successfully.")
 
-$(OUT_DIR)/Kernel.bin: $(INT_DIR)/Kernel/Kernel.so
-	$(call print_action, "Linking Kernel.bin...")
+$(OUT_DIR)/Kernel.elf: $(INT_DIR)/Kernel/Kernel.so
+	$(call print_action, "Converting Kernel.so to Kernel.elf...")
 	@mkdir -p $(@D)
-	objcopy -O binary $< $@
-	$(call print_success, "Linked Kernel.bin successfully.")
+	strip -o $@ -O elf64-little $<
+	$(call print_success, "Converted Kernel.so to Kernel.elf successfully.")
 
 clean:
 	$(call print_action, "Cleaning...")

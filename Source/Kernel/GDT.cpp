@@ -1,5 +1,6 @@
 #include "GDT.h"
 
+// TODO: Initialize in GDTLoader instead
 ALIGN GDT g_GDT = {
   // LimitLow, BaseLow, BaseMiddle, Access, Granularity, BaseHigh
   { 0, 0, 0, 0x00, 0x00, 0 }, // Null

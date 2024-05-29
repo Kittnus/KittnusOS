@@ -1,17 +1,22 @@
 #include "GDTLoader.h"
-#include "UART.h"
 #include "MemoryManager.h"
+#include "UART.h"
 
 extern "C" void KernelEntry()
 {
-  return;
+  for (int i = 0; i < 300000000; i++) asm("nop"); // TODO: Remove
+
   asm("cli");
+
+  for (int i = 0; i < 300000000; i++) asm("nop"); // TODO: Remove
 
   UART::Initialize();
 
+  for (int i = 0; i < 300000000; i++) asm("nop"); // TODO: Remove
+
   UART::Print("Kernel entry point reached.");
 
-  return;
+  for (int i = 0; i < 300000000; i++) asm("nop"); // TODO: Remove
 
   // Start by setting up GDT
   GDTLoader::Load();
