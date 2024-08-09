@@ -1,7 +1,3 @@
 {
-    "editor.tabSize": 2,
-    "files.associations": {
-        "algorithm": "cpp",
-        "format": "cpp"
-    }
+  "editor.tabSize": 2
 }
