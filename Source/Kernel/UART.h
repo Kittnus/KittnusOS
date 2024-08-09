@@ -2,7 +2,7 @@
 
 #include "Types.h"
 
-#define COM 0x2F8
+#define COM 0x3F8
 
 #define BAUD_RATE    9600
 #define BAUD_DIVISOR 115200 / BAUD_RATE
