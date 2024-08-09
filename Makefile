@@ -28,9 +28,9 @@ endef
 
 all: $(OUT_DIR)/EFI/Boot/Bootx64.efi $(OUT_DIR)/Kernel.elf
 
-BOOT_CFLAGS 	:= -I$(VND_DIR)/efi -DEFI_PLATFORM=EFI_ARCH_X64
+BOOT_CFLAGS 	:= -I$(SRC_DIR)/Boot -I$(VND_DIR)/efi -DEFI_PLATFORM=EFI_ARCH_X64
 BOOT_SECTIONS := -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc
-BOOT_OBJS 		:= $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*.cpp))
+BOOT_OBJS 		 = $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*.cpp))
 BOOT_OBJS 		+= $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*/*.cpp))
 
 $(INT_DIR)/Boot/%.o: $(SRC_DIR)/Boot/%.cpp $(wildcard $(SRC_DIR)/Boot/%.h)
@@ -45,7 +45,8 @@ $(OUT_DIR)/EFI/Boot/Bootx64.efi: $(BOOT_OBJS)
 	$(CC) $(CFLAGS) $(BOOT_CFLAGS) -shared -Wl,-dll -Wl,--subsystem,10 -e efi_main $^ -o $@
 	$(call print_success, "Converted Bootx64.so to Bootx64.efi successfully.")
 
-KERNEL_LDFLAGS  := -O2 -g -static -fPIC -shared -Bsymbolic -nostdlib -e KernelEntry
+KERNEL_CFLAGS	 := -I$(SRC_DIR)/Kernel
+KERNEL_LDFLAGS := -O2 -g -static -fPIC -shared -Bsymbolic -nostdlib -e KernelEntry
 KERNEL_ASMOBJS := $(patsubst $(SRC_DIR)%.asm,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.asm)) # TODO: Remvoe
 KERNEL_OBJS 	  = $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.cpp))
 KERNEL_OBJS 	 += $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*/*.cpp))
@@ -59,7 +60,7 @@ $(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.asm
 $(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.cpp $(wildcard $(SRC_DIR)/Kernel/%.h)
 	$(call print_action, "Compiling $<...")
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(KERNEL_CFLAGS) -c $< -o $@
 	$(call print_minor_success, "Compiled $< successfully.")
 
 $(INT_DIR)/Kernel/Kernel.so: $(KERNEL_ASMOBJS) $(KERNEL_OBJS)
