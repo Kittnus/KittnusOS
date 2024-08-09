@@ -43,6 +43,9 @@ public:
   static void PrintLn(UInt64 value);
   static void PrintHexLn(UInt64 value);
 
+  static void NewLine();
+
+  static void ClearLine();
   static void ClearScreen();
 
 private:
@@ -52,5 +55,4 @@ private:
   static void SetPixel(UInt64 x, UInt64 y, UInt32 color);
 
   static void DrawChar(char c, UInt64 x, UInt64 y);
-  static void NewLine();
 };

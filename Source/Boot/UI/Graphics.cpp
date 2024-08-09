@@ -94,6 +94,21 @@ void Graphics::PrintHexLn(UInt64 value)
   NewLine();
 }
 
+void Graphics::NewLine()
+{
+  s_OffsetX = 0;
+  s_OffsetY += FONT_HEIGHT;
+}
+
+void Graphics::ClearLine()
+{
+  for (UInt64 y = s_OffsetY; y < s_OffsetY + FONT_HEIGHT; y++)
+    for (UInt64 x = 0; x < s_ScreenWidth; x++)
+      SetPixel(x, y, s_BackgroundColor);
+
+  s_OffsetX = 0;
+}
+
 void Graphics::ClearScreen()
 {
   for (UInt64 y = 0; y < s_ScreenHeight; y++)
@@ -150,10 +165,4 @@ void Graphics::DrawChar(char c, UInt64 x, UInt64 y)
       auto color = isTextPixel ? s_TextColor : s_TextBackgroundColor;
       SetPixel(x + j, y + i, color);
     }
-}
-
-void Graphics::NewLine()
-{
-  s_OffsetX = 0;
-  s_OffsetY += FONT_HEIGHT;
 }

@@ -14,6 +14,8 @@ void Boot()
 {
   // TODO: Think about using a watchdog timer to reset the system if the loader hangs
   // TODO: Add Boot option support
+  Graphics::ClearScreen();
+
   FileSystem::Initialize();
   KernelLoader::Load();
 
@@ -23,22 +25,24 @@ void Boot()
 
 void DisplayCountDown()
 {
+  Graphics::ClearScreen();
+  Graphics::PrintLn("Kittnus Neo Bootloader - Built on " __DATE__
+                    " at " __TIME__);
+
   for (int i = 3; i > 0; i--)
   {
-    Graphics::ClearScreen();
-    Graphics::PrintLn("Kittnus Neo Bootloader - Built on " __DATE__
-                      " at " __TIME__);
+    Graphics::ClearLine();
+
     Graphics::Print("Booting KittnusOS in ");
 
     auto character = (char)('0' + i);
     Graphics::Print(&character);
 
-    Graphics::PrintLn(" seconds...");
+    Graphics::Print(" seconds...");
 
     Global::BootServices->Stall(1 * 1000 * 1000);
   }
-
-  Graphics::ClearScreen();
+  Graphics::NewLine();
 }
 
 extern "C" EFI_STATUS EFIAPI efi_main(EFI_HANDLE imageHandle,
