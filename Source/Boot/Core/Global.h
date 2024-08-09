@@ -1,8 +1,8 @@
 #pragma once
 
-#include "EfiMacros.h"
 #include "Types.h"
 #include "UI/Graphics.h"
+#include "Utilities/EfiMacros.h"
 
 class Global
 {

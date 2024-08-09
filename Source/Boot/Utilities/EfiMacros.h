@@ -1,4 +1,4 @@
-#include "Graphics.h"
+#include "UI/Graphics.h"
 
 #include <efi.h>
 #include <protocol/efi-gop.h>

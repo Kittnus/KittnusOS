@@ -1,11 +1,10 @@
 #include "Graphics.h"
 
 #include "Console.h"
-#include "Global.h"
-#include "Macros.h"
-#include "Memory.h"
-#include "String.h"
-#include "Types.h"
+#include "Core/Global.h"
+#include "Services/Memory.h"
+#include "Utilities/Macros.h"
+#include "Utilities/String.h"
 
 void Graphics::Initialize()
 {

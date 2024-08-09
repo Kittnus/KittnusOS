@@ -1,6 +1,6 @@
 #include "Memory.h"
 
-#include "Global.h"
+#include "Core/Global.h"
 
 void Memory::Allocate(UInt64 size, void** address)
 {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Console.h"
-#include "Graphics.h"
+#include "UI/Console.h"
+#include "UI/Graphics.h"
 
 #define CHECK(condition, message)                 \
   if (!(condition))                               \

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "EfiMacros.h"
 #include "Font.h"
 #include "Types.h"
+#include "Utilities/EfiMacros.h"
 
 class Graphics
 {

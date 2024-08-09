@@ -1,11 +1,11 @@
 #include "KernelLoader.h"
 
-#include "FileSystem.h"
 #include "Global.h"
-#include "Graphics.h"
-#include "Macros.h"
-#include "Memory.h"
-#include "String.h"
+#include "Services/FileSystem.h"
+#include "Services/Memory.h"
+#include "UI/Graphics.h"
+#include "Utilities/Macros.h"
+#include "Utilities/String.h"
 
 void KernelLoader::Load()
 {
