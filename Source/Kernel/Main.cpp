@@ -7,6 +7,7 @@ extern "C" void KernelEntry()
   asm("cli");
 
   UART::Initialize();
+  return;
 
   UART::Print("Kernel entry point reached.");
 

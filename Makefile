@@ -72,12 +72,21 @@ $(INT_DIR)/Kernel/Kernel.so: $(KERNEL_ASMOBJS) $(KERNEL_OBJS)
 $(OUT_DIR)/Kernel.elf: $(INT_DIR)/Kernel/Kernel.so
 	$(call print_action, "Converting Kernel.so to Kernel.elf...")
 	@mkdir -p $(@D)
-	strip -o $@ -O elf64-little $<
+	strip --only-keep-debug -o $@ -O elf64-little $<
 	$(call print_success, "Converted Kernel.so to Kernel.elf successfully.")
 
+QEMU_FLAGS := -L $(VND_DIR)/ovmf -bios OVMF.fd -drive file=fat:rw:$(OUT_DIR),format=raw -m 512M
+
 run: all
-	$(call print_action, "Running the OS with Qemu...") # using ovmf
-	@qemu-system-x86_64 -L $(VND_DIR)/ovmf -bios OVMF.fd -drive file=fat:rw:$(OUT_DIR),format=raw -m 512M
+	$(call print_action, "Running the OS with Qemu...")
+	@qemu-system-x86_64 $(QEMU_FLAGS)
+	$(call print_success, "Qemu exited successfully.")
+
+debug: all
+	$(call print_action, "Running the OS with Qemu in debug mode...")
+	@qemu-system-x86_64 $(QEMU_FLAGS) -s -S &
+	$(call print_success, "Connecting to Qemu with GDB...")
+	@gdb -ex "target remote localhost:1234" -ex "symbol-file $(OUT_DIR)/Kernel.elf"
 	$(call print_success, "Qemu exited successfully.")
 
 clean:
