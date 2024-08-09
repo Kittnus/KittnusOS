@@ -15,9 +15,9 @@ void KernelLoader::Load()
 
 void KernelLoader::Execute()
 {
-  CHECK(s_EntryAddress, "Kernel entry point offset is null.");
+  CHECK(s_EntryAddress, "Kernel entry point is null.");
 
-  typedef int (*KernelEntry)();
+  typedef void (*KernelEntry)();
   auto kernelEntry = (KernelEntry)s_EntryAddress;
   kernelEntry();
 
