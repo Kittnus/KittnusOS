@@ -75,9 +75,14 @@ $(OUT_DIR)/Kernel.elf: $(INT_DIR)/Kernel/Kernel.so
 	strip -o $@ -O elf64-little $<
 	$(call print_success, "Converted Kernel.so to Kernel.elf successfully.")
 
+run: all
+	$(call print_action, "Running the OS with Qemu...") # using ovmf
+	@qemu-system-x86_64 -L $(VND_DIR)/ovmf -bios OVMF.fd -drive file=fat:rw:$(OUT_DIR),format=raw -m 512M
+	$(call print_success, "Qemu exited successfully.")
+
 clean:
 	$(call print_action, "Cleaning...")
 	@rm -rf $(OUT_DIR) $(INT_DIR)
 	$(call print_success, "Cleaned successfully.")
 
-.PHONY: all clean
+.PHONY: all run clean
