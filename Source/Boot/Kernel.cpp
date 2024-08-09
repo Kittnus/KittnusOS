@@ -15,19 +15,11 @@ void Kernel::Load()
 
 void Kernel::Execute()
 {
-  // TODO: Remove debug code
-  Graphics::PrintLn("Executing kernel entry point...");
-  // TODO: End debug code
+  CHECK(s_EntryAddress, "Kernel entry point offset is null.");
 
-  CHECK(s_KernelEntry, "Kernel entry point is null.");
-
-  typedef void (*KernelEntry)();
-  auto kernelEntry = (KernelEntry)s_KernelEntry;
+  typedef int (*KernelEntry)();
+  auto kernelEntry = (KernelEntry)s_EntryAddress;
   kernelEntry();
-
-  // TODO: Remove debug code
-  Graphics::PrintLn("Kernel entry point returned.");
-  // TODO: End debug code
 
   while (true);
 }
@@ -43,15 +35,15 @@ void Kernel::LoadFile(const wchar_t* name)
   file->GetPosition(file, &fileSize);
   file->SetPosition(file, 0);
 
-  EFI_CHECK(file->Read(file, &fileSize, (void*)c_KernelStart),
-            "Failed to read kernel file.");
+  EFI_CHECK(file->Read(file, &fileSize, (void*)KERNEL_LOAD_ADDRESS),
+            "Failed to read kernel file");
 
   file->Close(file);
 }
 
 void Kernel::LoadElf()
 {
-  auto header = (ElfHeader*)c_KernelStart;
+  auto header = (ElfHeader*)KERNEL_LOAD_ADDRESS;
 
   CHECK(header->e_Ident[0] == 0x7F || header->e_Ident[1] == 'E'
             || header->e_Ident[2] == 'L' || header->e_Ident[3] == 'F',
@@ -60,28 +52,34 @@ void Kernel::LoadElf()
   CHECK(header->e_Ident[4] == ELFCLASS64,
         "Unsupported ELF format."); // TODO: Support 32-bit
 
-  s_KernelEntry = header->e_Entry;
+  UInt64 imageBase = 0;
   for (UInt64 i = 0; i < header->e_PhdrEntrySize * header->e_PhdrCount;
        i += header->e_PhdrEntrySize)
   {
     auto programHeader =
-        (ElfProgramHeader*)(c_KernelStart + header->e_PhdrOffset + i);
+        (ElfProgramHeader*)(KERNEL_LOAD_ADDRESS + header->e_PhdrOffset + i);
     if (programHeader->p_Type != PT_LOAD) continue;
 
+    if (!imageBase) imageBase = programHeader->p_VAddr;
+
     auto segment = (UInt8*)(programHeader->p_VAddr);
-    Memory::Copy(segment, (void*)(c_KernelStart + programHeader->p_Offset),
-                 programHeader->p_Filesz);
+    auto fileData = (UInt8*)(KERNEL_LOAD_ADDRESS + programHeader->p_Offset);
+
+    Memory::Copy(segment, fileData, programHeader->p_Filesz);
 
     auto remainingSize = programHeader->p_Filesz;
     while (remainingSize < programHeader->p_Memsz)
-      *(UInt8*)(programHeader->p_VAddr + remainingSize++) = 0;
+      *(segment + remainingSize++) = 0;
   }
+
+  auto entryOffset = header->e_Entry - imageBase;
+  s_EntryAddress = KERNEL_LOAD_ADDRESS + entryOffset;
 }
 
 void Kernel::AllocateMemory()
 {
-  EFI_PHYSICAL_ADDRESS kernelStart = c_KernelStart;
+  EFI_PHYSICAL_ADDRESS kernelStart = KERNEL_LOAD_ADDRESS;
   EFI_CHECK(Global::BootServices->AllocatePages(AllocateAddress, EfiLoaderData,
                                                 0x2000, &kernelStart),
-            "Failed to allocate memory for kernel.");
+            "Failed to allocate memory for kernel");
 }
