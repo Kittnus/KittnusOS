@@ -1,6 +1,6 @@
 #include "Console.h"
 
-#include "Global.h"
+#include "Core/Global.h"
 
 void Console::Print(const wchar_t* string)
 {

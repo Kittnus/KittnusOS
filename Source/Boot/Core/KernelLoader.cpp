@@ -1,4 +1,4 @@
-#include "Kernel.h"
+#include "KernelLoader.h"
 
 #include "FileSystem.h"
 #include "Global.h"
@@ -7,13 +7,13 @@
 #include "Memory.h"
 #include "String.h"
 
-void Kernel::Load()
+void KernelLoader::Load()
 {
   LoadFile(L"Kernel.elf");
   LoadElf();
 }
 
-void Kernel::Execute()
+void KernelLoader::Execute()
 {
   CHECK(s_EntryAddress, "Kernel entry point offset is null.");
 
@@ -24,7 +24,7 @@ void Kernel::Execute()
   while (true);
 }
 
-void Kernel::LoadFile(const wchar_t* name)
+void KernelLoader::LoadFile(const wchar_t* name)
 {
   auto file = FileSystem::OpenFile(name, EFI_FILE_MODE_READ);
 
@@ -41,7 +41,7 @@ void Kernel::LoadFile(const wchar_t* name)
   file->Close(file);
 }
 
-void Kernel::LoadElf()
+void KernelLoader::LoadElf()
 {
   auto header = (ElfHeader*)KERNEL_LOAD_ADDRESS;
 
@@ -76,7 +76,7 @@ void Kernel::LoadElf()
   s_EntryAddress = KERNEL_LOAD_ADDRESS + entryOffset;
 }
 
-void Kernel::AllocateMemory()
+void KernelLoader::AllocateMemory()
 {
   EFI_PHYSICAL_ADDRESS kernelStart = KERNEL_LOAD_ADDRESS;
   EFI_CHECK(Global::BootServices->AllocatePages(AllocateAddress, EfiLoaderData,

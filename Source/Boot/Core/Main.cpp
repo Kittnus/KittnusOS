@@ -1,7 +1,7 @@
-#include "Console.h"
-#include "FileSystem.h"
 #include "Global.h"
-#include "Kernel.h"
+#include "KernelLoader.h"
+#include "Services/FileSystem.h"
+#include "UI/Console.h"
 
 void ExitBS()
 {
@@ -15,10 +15,10 @@ void Boot()
   // TODO: Think about using a watchdog timer to reset the system if the loader hangs
   // TODO: Add Boot option support
   FileSystem::Initialize();
-  Kernel::Load();
+  KernelLoader::Load();
 
   ExitBS();
-  Kernel::Execute();
+  KernelLoader::Execute();
 }
 
 void DisplayCountDown()

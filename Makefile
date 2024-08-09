@@ -31,6 +31,7 @@ all: $(OUT_DIR)/EFI/Boot/Bootx64.efi $(OUT_DIR)/Kernel.elf
 BOOT_CFLAGS 	:= -I$(VND_DIR)/efi -DEFI_PLATFORM=EFI_ARCH_X64
 BOOT_SECTIONS := -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc
 BOOT_OBJS 		:= $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*.cpp))
+BOOT_OBJS 		+= $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*/*.cpp))
 
 $(INT_DIR)/Boot/%.o: $(SRC_DIR)/Boot/%.cpp $(wildcard $(SRC_DIR)/Boot/%.h)
 	$(call print_action, "Compiling $<...")
@@ -45,7 +46,7 @@ $(OUT_DIR)/EFI/Boot/Bootx64.efi: $(BOOT_OBJS)
 	$(call print_success, "Converted Bootx64.so to Bootx64.efi successfully.")
 
 KERNEL_LDFLAGS  := -O2 -g -static -fPIC -shared -Bsymbolic -nostdlib -e KernelEntry
-KERNEL_ASMOBJS := $(patsubst $(SRC_DIR)%.asm,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.asm))
+KERNEL_ASMOBJS := $(patsubst $(SRC_DIR)%.asm,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.asm)) # TODO: Remvoe
 KERNEL_OBJS 	  = $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.cpp))
 KERNEL_OBJS 	 += $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*/*.cpp))
 

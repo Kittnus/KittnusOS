@@ -5,8 +5,7 @@
 
 #define KERNEL_LOAD_ADDRESS 0x4000000
 
-// TODO: Rename to KernelLoader
-class Kernel
+class KernelLoader
 {
 private:
   static inline UInt64 s_EntryAddress;

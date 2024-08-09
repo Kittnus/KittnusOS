@@ -1,8 +1,8 @@
 #include "FileSystem.h"
 
-#include "Global.h"
-#include "Memory.h"
-#include "String.h"
+#include "Core/Global.h"
+#include "Services/Memory.h"
+#include "Utilities/String.h"
 
 void FileSystem::Initialize()
 {

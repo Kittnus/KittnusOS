@@ -1,7 +1,7 @@
 #pragma once
 
-#include "EfiMacros.h"
 #include "Types.h"
+#include "Utilities/EfiMacros.h"
 
 class FileSystem
 {
