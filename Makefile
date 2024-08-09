@@ -7,7 +7,7 @@ CC 					:= gcc
 LD 					:= ld
 AS 					:= nasm
 
-CFLAGS	:= -Wall -Werror -ffreestanding -mno-red-zone -nostdlib -fno-stack-protector -fPIC -I$(SRC_DIR)/Common
+CFLAGS	:= -Wall -Werror -ffreestanding -mno-red-zone -nostdlib -fno-stack-protector -g -fPIC -I$(SRC_DIR)/Common
 
 DARK_GRAY 	:= \033[1;30m
 LIGHT_GREEN := \033[1;32m
