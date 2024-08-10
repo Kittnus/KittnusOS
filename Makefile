@@ -4,7 +4,6 @@ OUT_DIR 		:= Binaries
 INT_DIR			:= Intermediate
 
 CC 					:= gcc
-LD 					:= ld
 AS 					:= nasm
 
 CFLAGS	:= -Wall -Werror -ffreestanding -mno-red-zone -nostdlib -fno-stack-protector -g -fPIC -I$(SRC_DIR)/Common
@@ -29,7 +28,7 @@ endef
 all: $(OUT_DIR)/EFI/Boot/Bootx64.efi $(OUT_DIR)/Kernel.elf
 
 BOOT_CFLAGS 	:= -I$(SRC_DIR)/Boot -I$(VND_DIR)/efi -DEFI_PLATFORM=EFI_ARCH_X64
-BOOT_SECTIONS := -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc
+BOOT_LDFLAGS  := -shared -Wl,-dll -Wl,--subsystem,10 -e EfiMain
 BOOT_OBJS 		 = $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*.cpp))
 BOOT_OBJS 		+= $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*/*.cpp))
 
@@ -42,7 +41,7 @@ $(INT_DIR)/Boot/%.o: $(SRC_DIR)/Boot/%.cpp $(wildcard $(SRC_DIR)/Boot/%.h)
 $(OUT_DIR)/EFI/Boot/Bootx64.efi: $(BOOT_OBJS)
 	$(call print_action, "Converting Bootx64.so to Bootx64.efi...")
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) $(BOOT_CFLAGS) -shared -Wl,-dll -Wl,--subsystem,10 -e EfiMain $^ -o $@
+	$(CC) $(BOOT_LDFLAGS) $^ -o $@
 	$(call print_success, "Converted Bootx64.so to Bootx64.efi successfully.")
 
 KERNEL_CFLAGS	 := -I$(SRC_DIR)/Kernel
@@ -66,7 +65,7 @@ $(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.cpp $(wildcard $(SRC_DIR)/Kernel/%.h)
 $(INT_DIR)/Kernel/Kernel.so: $(KERNEL_ASMOBJS) $(KERNEL_OBJS)
 	$(call print_action, "Linking Kernel.so...")
 	@mkdir -p $(@D)
-	$(LD) $(KERNEL_LDFLAGS) -o $@ $^
+	$(CC) $(KERNEL_LDFLAGS) -o $@ $^
 	$(call print_success, "Linked Kernel.so successfully.")
 
 $(OUT_DIR)/Kernel.elf: $(INT_DIR)/Kernel/Kernel.so
@@ -86,7 +85,7 @@ debug: all
 	$(call print_action, "Running the OS with Qemu in debug mode...")
 	@qemu-system-x86_64 $(QEMU_FLAGS) -s -S &
 	$(call print_success, "Connecting to Qemu with GDB...")
-	@gdb -ex "target remote localhost:1234" -ex "symbol-file $(OUT_DIR)/EFI/Boot/Bootx64.efi" -ex "add-symbol-file $(OUT_DIR)/Kernel.elf 0x40001D0"
+	@gdb -ex "target remote localhost:1234" -ex "symbol-file $(OUT_DIR)/Kernel.elf"
 	$(call print_success, "Qemu exited successfully.")
 
 clean:
