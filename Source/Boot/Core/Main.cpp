@@ -12,7 +12,8 @@ void ExitBS()
 
 void Boot()
 {
-  // TODO: Think about using a watchdog timer to reset the system if the loader hangs
+  Global::BootServices->SetWatchdogTimer(4, 0, 0, NULL); 
+
   // TODO: Add Boot option support
   Graphics::ClearScreen();
 
@@ -45,8 +46,8 @@ void DisplayCountDown()
   Graphics::NewLine();
 }
 
-extern "C" EFI_STATUS EFIAPI efi_main(EFI_HANDLE imageHandle,
-                                      EFI_SYSTEM_TABLE* systemTable)
+extern "C" EFI_STATUS EFIAPI EfiMain(EFI_HANDLE imageHandle,
+                                     EFI_SYSTEM_TABLE* systemTable)
 {
   Global::Initialize(imageHandle, systemTable);
   Graphics::Initialize();

@@ -42,11 +42,11 @@ $(INT_DIR)/Boot/%.o: $(SRC_DIR)/Boot/%.cpp $(wildcard $(SRC_DIR)/Boot/%.h)
 $(OUT_DIR)/EFI/Boot/Bootx64.efi: $(BOOT_OBJS)
 	$(call print_action, "Converting Bootx64.so to Bootx64.efi...")
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) $(BOOT_CFLAGS) -shared -Wl,-dll -Wl,--subsystem,10 -e efi_main $^ -o $@
+	$(CC) $(CFLAGS) $(BOOT_CFLAGS) -shared -Wl,-dll -Wl,--subsystem,10 -e EfiMain $^ -o $@
 	$(call print_success, "Converted Bootx64.so to Bootx64.efi successfully.")
 
 KERNEL_CFLAGS	 := -I$(SRC_DIR)/Kernel
-KERNEL_LDFLAGS := -O2 -g -static -fPIC -shared -Bsymbolic -nostdlib -e KernelEntry
+KERNEL_LDFLAGS := -O2 -g -static -fPIC -shared -Bsymbolic -nostdlib -e KernelMain
 KERNEL_ASMOBJS := $(patsubst $(SRC_DIR)%.asm,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.asm)) # TODO: Remvoe
 KERNEL_OBJS 	  = $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.cpp))
 KERNEL_OBJS 	 += $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*/*.cpp))
@@ -75,7 +75,7 @@ $(OUT_DIR)/Kernel.elf: $(INT_DIR)/Kernel/Kernel.so
 	strip --only-keep-debug -o $@ -O elf64-little $<
 	$(call print_success, "Converted Kernel.so to Kernel.elf successfully.")
 
-QEMU_FLAGS := -L $(VND_DIR)/ovmf -bios OVMF.fd -drive file=fat:rw:$(OUT_DIR),format=raw -m 512M
+QEMU_FLAGS := -L $(VND_DIR)/ovmf -bios OVMF.fd -drive file=fat:rw:$(OUT_DIR),format=raw -m 512M -kernel $(OUT_DIR)/Kernel.elf -machine type=pc-i440fx-3.1 -append nokaslr
 
 run: all
 	$(call print_action, "Running the OS with Qemu...")
@@ -86,7 +86,7 @@ debug: all
 	$(call print_action, "Running the OS with Qemu in debug mode...")
 	@qemu-system-x86_64 $(QEMU_FLAGS) -s -S &
 	$(call print_success, "Connecting to Qemu with GDB...")
-	@gdb -ex "target remote localhost:1234" -ex "symbol-file $(OUT_DIR)/Kernel.elf"
+	@gdb -ex "target remote localhost:1234" -ex "symbol-file $(OUT_DIR)/EFI/Boot/Bootx64.efi" -ex "add-symbol-file $(OUT_DIR)/Kernel.elf 0x40001D0"
 	$(call print_success, "Qemu exited successfully.")
 
 clean:

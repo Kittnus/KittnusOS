@@ -17,10 +17,15 @@ void KernelLoader::Execute()
 {
   CHECK(s_EntryAddress, "Kernel entry point is null.");
 
-  typedef void (*KernelEntry)();
-  auto kernelEntry = (KernelEntry)s_EntryAddress;
-  kernelEntry();
+  // TODO: Remove debug code
+  Graphics::Print("Kernel entry point: ");
+  Graphics::PrintHexLn(s_EntryAddress);
+  // TODO: End debug code
 
+  typedef int (*KernelEntry)();
+  auto kernelMain = (KernelEntry)s_EntryAddress;
+
+  kernelMain();
   while (true);
 }
 
