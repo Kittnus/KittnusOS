@@ -72,7 +72,7 @@ $(INT_DIR)/Kernel/Kernel.so: $(KERNEL_ASMOBJS) $(KERNEL_OBJS)
 $(OUT_DIR)/Kernel.elf: $(INT_DIR)/Kernel/Kernel.so
 	$(call print_action, "Converting Kernel.so to Kernel.elf...")
 	@mkdir -p $(@D)
-	strip --only-keep-debug -o $@ -O elf64-little $<
+	@objcopy -O elf64-x86-64 $< $@
 	$(call print_success, "Converted Kernel.so to Kernel.elf successfully.")
 
 QEMU_FLAGS := -L $(VND_DIR)/ovmf -bios OVMF.fd -drive file=fat:rw:$(OUT_DIR),format=raw -m 512M -kernel $(OUT_DIR)/Kernel.elf -machine type=pc-i440fx-3.1 -append nokaslr
