@@ -1,11 +1,11 @@
-#include "UART.h"
+#include "Drivers/SerialPort.h"
 
 extern "C" int KernelMain()
 {
   asm("cli");
 
-  UART::Initialize();
-  UART::Print("Kernel entry point reached.");
+  SerialPort::Initialize();
+  SerialPort::Print("Kernel entry point reached.");
 
   asm("sti");
 }
