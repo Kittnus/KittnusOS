@@ -12,7 +12,7 @@ private:
 
 public:
   static void Load();
-  static void Execute();
+  [[noreturn]] static void Execute();
 
 private:
   static void LoadFile(const wchar_t* name);

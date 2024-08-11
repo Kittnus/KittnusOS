@@ -13,7 +13,7 @@ void KernelLoader::Load()
   LoadElf();
 }
 
-void KernelLoader::Execute()
+[[noreturn]] void KernelLoader::Execute()
 {
   CHECK(s_EntryAddress, "Kernel entry point is null.");
 
@@ -81,6 +81,7 @@ void KernelLoader::LoadElf()
   s_EntryAddress = KERNEL_LOAD_ADDRESS + entryOffset;
 }
 
+// TODO: Implement Kernel Address Space Layout Randomization (KASLR)
 void KernelLoader::AllocateMemory()
 {
   EFI_PHYSICAL_ADDRESS kernelStart = KERNEL_LOAD_ADDRESS;
