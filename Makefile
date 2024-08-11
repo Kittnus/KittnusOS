@@ -3,10 +3,10 @@ VND_DIR		 	:= Vendor
 OUT_DIR 		:= Binaries
 INT_DIR			:= Intermediate
 
-CC 					:= gcc
+CXX 					:= g++
 AS 					:= nasm
 
-CFLAGS	:= -Wall -Werror -ffreestanding -mno-red-zone -nostdlib -fno-stack-protector -fPIC -I$(SRC_DIR)/Common
+CFLAGS	:= -Wall -Werror -ffreestanding -mno-red-zone -fno-stack-protector -fno-rtti -fno-exceptions -fPIC -I$(SRC_DIR)/Common
 
 DARK_GRAY 	:= \033[1;30m
 LIGHT_GREEN := \033[1;32m
@@ -27,7 +27,7 @@ endef
 
 all: $(OUT_DIR)/EFI/Boot/Bootx64.efi $(OUT_DIR)/Kernel.elf
 
-BOOT_CFLAGS 	:= -I$(SRC_DIR)/Boot -I$(VND_DIR)/efi -DEFI_PLATFORM=EFI_ARCH_X64
+BOOT_CFLAGS 	:= -I$(SRC_DIR)/Boot -I$(VND_DIR)/efi -DEFI_PLATFORM=EFI_ARCH_X64 -nostdlib
 BOOT_LDFLAGS  := -shared -Wl,-dll -Wl,--subsystem,10 -e EfiMain
 BOOT_OBJS 		 = $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*.cpp))
 BOOT_OBJS 		+= $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*/*.cpp))
@@ -35,17 +35,17 @@ BOOT_OBJS 		+= $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Bo
 $(INT_DIR)/Boot/%.o: $(SRC_DIR)/Boot/%.cpp $(wildcard $(SRC_DIR)/Boot/%.h)
 	$(call print_action, "Compiling $<...")
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) $(BOOT_CFLAGS) -c $< -o $@
+	$(CXX) $(CFLAGS) $(BOOT_CFLAGS) -c $< -o $@
 	$(call print_minor_success, "Compiled $< successfully.")
 
 $(OUT_DIR)/EFI/Boot/Bootx64.efi: $(BOOT_OBJS)
 	$(call print_action, "Converting Bootx64.so to Bootx64.efi...")
 	@mkdir -p $(@D)
-	$(CC) $(BOOT_LDFLAGS) $^ -o $@
+	$(CXX) $(BOOT_LDFLAGS) $^ -o $@
 	$(call print_success, "Converted Bootx64.so to Bootx64.efi successfully.")
 
-KERNEL_CFLAGS	 := -I$(SRC_DIR)/Kernel -g
-KERNEL_LDFLAGS := -O2 -static -fPIC -shared -Bsymbolic -nostdlib -e KernelMain
+KERNEL_CFLAGS	 := -I$(SRC_DIR)/Kernel -g -std=c++17
+KERNEL_LDFLAGS := -O2 -static -fPIC -shared -Bsymbolic -e KernelMain
 KERNEL_ASMOBJS := $(patsubst $(SRC_DIR)%.asm,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.asm)) # TODO: Remvoe
 KERNEL_OBJS 	  = $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.cpp))
 KERNEL_OBJS 	 += $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*/*.cpp))
@@ -59,13 +59,13 @@ $(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.asm
 $(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.cpp $(wildcard $(SRC_DIR)/Kernel/%.h)
 	$(call print_action, "Compiling $<...")
 	@mkdir -p $(@D)
-	$(CC) $(CFLAGS) $(KERNEL_CFLAGS) -c $< -o $@
+	$(CXX) $(CFLAGS) $(KERNEL_CFLAGS) -c $< -o $@
 	$(call print_minor_success, "Compiled $< successfully.")
 
 $(INT_DIR)/Kernel/Kernel.so: $(KERNEL_ASMOBJS) $(KERNEL_OBJS)
 	$(call print_action, "Linking Kernel.so...")
 	@mkdir -p $(@D)
-	$(CC) $(KERNEL_LDFLAGS) -o $@ $^
+	$(CXX) $(KERNEL_LDFLAGS) -o $@ $^
 	$(call print_success, "Linked Kernel.so successfully.")
 
 $(OUT_DIR)/Kernel.elf: $(INT_DIR)/Kernel/Kernel.so
@@ -85,7 +85,7 @@ debug: all
 	$(call print_action, "Running the OS with Qemu in debug mode...")
 	@qemu-system-x86_64 $(QEMU_FLAGS) -s -S &
 	$(call print_success, "Connecting to Qemu with GDB...")
-	@gdb -ex "target remote localhost:1234" -ex "symbol-file $(OUT_DIR)/Kernel.elf"
+	@gdb -ex "target remote localhost:1234" -ex "symbol-file $(OUT_DIR)/Kernel.elf" # TODO: Fix the symbols not loading at the correct address
 	$(call print_success, "Qemu exited successfully.")
 
 clean:
