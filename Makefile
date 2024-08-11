@@ -14,15 +14,15 @@ GREEN 			:= \033[0;32m
 RESET				:= \033[0m
 
 define print_action
-	@echo "${DARK_GRAY}$1${RESET}"
+	@echo -e "${DARK_GRAY}$1${RESET}"
 endef
 
 define print_minor_success
-	@echo "${GREEN}$1${RESET}"
+	@echo -e "${GREEN}$1${RESET}"
 endef
 
 define print_success
-	@echo "${LIGHT_GREEN}$1${RESET}"
+	@echo -e "${LIGHT_GREEN}$1${RESET}"
 endef
 
 all: $(OUT_DIR)/EFI/Boot/Bootx64.efi $(OUT_DIR)/Kernel.elf
