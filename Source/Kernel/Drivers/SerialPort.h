@@ -26,9 +26,9 @@ private:
 
 public:
   SerialPort(UInt16 port = COM1);
+  ~SerialPort() = default;
 
-  void Print(const char* data);
-  void PrintLn(const char* data);
+  void Transmit(UInt8 byte);
 
 private:
   void SetBaudRate(UInt16 divisor);
@@ -36,6 +36,5 @@ private:
   void ConfigureFifoControl();
   void ConfigureModemControl();
 
-  bool IsTransmitFifoEmpty();
-  void WriteByte(UInt8 byte);
+  bool IsTransmitEmpty();
 };

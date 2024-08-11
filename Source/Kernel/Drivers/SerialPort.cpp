@@ -9,52 +9,41 @@ SerialPort::SerialPort(UInt16 port)
   ConfigureLineControl();
   ConfigureFifoControl();
   ConfigureModemControl();
-
-  // Here we configure IRQ4 (COM1 & COM3) or IRQ3 (COM2 & COM4)
 }
 
-void SerialPort::Print(const char* data)
+void SerialPort::Transmit(UInt8 byte)
 {
-  auto c = (char*)data;
-  while (*c != 0) WriteByte((UInt8)*c++);
-}
+  while (!IsTransmitEmpty());
 
-void SerialPort::PrintLn(const char* data)
-{
-  Print(data);
-  Print("\r\n");
+  IO::Write8(DATA_PORT(m_Com), byte); // Send byte
 }
 
 void SerialPort::SetBaudRate(UInt16 divisor)
 {
-  IO::Write8(LINE_CONTROL_PORT(m_Com), 0b10000000);
-  IO::Write8(DATA_PORT(m_Com), (divisor >> 8) & 0xFF);
-  IO::Write8(DATA_PORT(m_Com), divisor & 0xFF);
+  IO::Write8(LINE_CONTROL_PORT(m_Com), 0b10000000); // Enable DLAB
+  IO::Write8(DATA_PORT(m_Com), (divisor >> 8) & 0xFF); // Set divisor
+  IO::Write8(DATA_PORT(m_Com), divisor & 0xFF); // Set divisor
 }
 
 void SerialPort::ConfigureLineControl()
 {
-  IO::Write8(LINE_CONTROL_PORT(m_Com), 0b00000011);
+  IO::Write8(LINE_CONTROL_PORT(m_Com),
+             0b00000011); // 8N1 (8 data bits, no parity, 1 stop bit)
 }
 
 void SerialPort::ConfigureFifoControl()
 {
-  IO::Write8(FIFO_CONTROL_PORT(m_Com), 0b11000111);
+  IO::Write8(FIFO_CONTROL_PORT(m_Com),
+             0b11000111); // Enable FIFO, clear FIFO, set 14-byte threshold
 }
 
 void SerialPort::ConfigureModemControl()
 {
-  IO::Write8(MODEM_CONTROL_PORT(m_Com), 0b00001011);
+  IO::Write8(MODEM_CONTROL_PORT(m_Com),
+             0b00001011); // Enable DTR, RTS, and OUT2
 }
 
-bool SerialPort::IsTransmitFifoEmpty()
+bool SerialPort::IsTransmitEmpty()
 {
-  return IO::Read8(LINE_STATUS_PORT(m_Com)) & 0b00100000;
-}
-
-void SerialPort::WriteByte(UInt8 byte)
-{
-  while (!IsTransmitFifoEmpty());
-
-  IO::Write8(DATA_PORT(m_Com), byte);
+  return IO::Read8(LINE_STATUS_PORT(m_Com)) & 0b00100000; // Check bit 5
 }
