@@ -5,10 +5,20 @@
 SerialPort::SerialPort(UInt16 port)
     : m_Com(port)
 {
+  std::lock_guard<std::mutex> lock(m_Mutex);
+  if (m_InUsePorts.find(port) != m_InUsePorts.end())
+    return;
+
   SetBaudRate(MAX_BAUD_RATE / BAUD_RATE);
   ConfigureLineControl();
   ConfigureFifoControl();
   ConfigureModemControl();
+}
+
+SerialPort::~SerialPort()
+{
+  std::lock_guard<std::mutex> lock(m_Mutex);
+  m_InUsePorts.erase(m_Com);
 }
 
 void SerialPort::Transmit(UInt8 byte)
