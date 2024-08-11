@@ -2,18 +2,22 @@
 
 #include "HAL/IO.h"
 
+bool SerialPort::s_InUsePorts[4] = { false, false, false, false };
+
 SerialPort::SerialPort(UInt16 port)
     : m_Com(port)
 {
-  if (m_InUsePorts.find(port) != m_InUsePorts.end()) return;
+  if (IsInUse()) return;
 
   SetBaudRate(MAX_BAUD_RATE / BAUD_RATE);
   ConfigureLineControl();
   ConfigureFifoControl();
   ConfigureModemControl();
+
+  SetInUse(true);
 }
 
-SerialPort::~SerialPort() { m_InUsePorts.erase(m_Com); }
+SerialPort::~SerialPort() { SetInUse(false); }
 
 void SerialPort::Transmit(UInt8 byte)
 {
@@ -51,3 +55,24 @@ bool SerialPort::IsTransmitEmpty()
 {
   return IO::Read8(LINE_STATUS_PORT(m_Com)) & 0b00100000; // Check bit 5
 }
+
+int SerialPort::GetPortIndex()
+{
+  switch (m_Com)
+  {
+  case COM1:
+    return 0;
+  case COM2:
+    return 1;
+  case COM3:
+    return 2;
+  case COM4:
+    return 3;
+  default:
+    return -1;
+  }
+}
+
+bool SerialPort::IsInUse() { return s_InUsePorts[GetPortIndex()]; }
+
+void SerialPort::SetInUse(bool inUse) { s_InUsePorts[GetPortIndex()] = inUse; }

@@ -2,8 +2,6 @@
 
 #include "Types.h"
 
-#include <unordered_set>
-
 #define COM1 0x3F8
 #define COM2 0x2F8
 #define COM3 0x3E8
@@ -25,7 +23,7 @@ class SerialPort
 {
 private:
   UInt16 m_Com;
-  std::unordered_set<UInt16> m_InUsePorts;
+  static bool s_InUsePorts[4];
 
 public:
   SerialPort(UInt16 port = COM1);
@@ -40,4 +38,8 @@ private:
   void ConfigureModemControl();
 
   bool IsTransmitEmpty();
+
+  int GetPortIndex();
+  bool IsInUse();
+  void SetInUse(bool inUse);
 };
