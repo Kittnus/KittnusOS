@@ -2,7 +2,6 @@
 
 #include "Types.h"
 
-#include <mutex>
 #include <unordered_set>
 
 #define COM1 0x3F8
@@ -27,7 +26,6 @@ class SerialPort
 private:
   UInt16 m_Com;
   std::unordered_set<UInt16> m_InUsePorts;
-  std::mutex m_Mutex;
 
 public:
   SerialPort(UInt16 port = COM1);
