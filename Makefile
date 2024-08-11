@@ -6,7 +6,7 @@ INT_DIR			:= Intermediate
 CC 					:= gcc
 AS 					:= nasm
 
-CFLAGS	:= -Wall -Werror -ffreestanding -mno-red-zone -nostdlib -fno-stack-protector -g -fPIC -I$(SRC_DIR)/Common
+CFLAGS	:= -Wall -Werror -ffreestanding -mno-red-zone -nostdlib -fno-stack-protector -fPIC -I$(SRC_DIR)/Common
 
 DARK_GRAY 	:= \033[1;30m
 LIGHT_GREEN := \033[1;32m
@@ -44,8 +44,8 @@ $(OUT_DIR)/EFI/Boot/Bootx64.efi: $(BOOT_OBJS)
 	$(CC) $(BOOT_LDFLAGS) $^ -o $@
 	$(call print_success, "Converted Bootx64.so to Bootx64.efi successfully.")
 
-KERNEL_CFLAGS	 := -I$(SRC_DIR)/Kernel
-KERNEL_LDFLAGS := -O2 -g -static -fPIC -shared -Bsymbolic -nostdlib -e KernelMain
+KERNEL_CFLAGS	 := -I$(SRC_DIR)/Kernel -g
+KERNEL_LDFLAGS := -O2 -static -fPIC -shared -Bsymbolic -nostdlib -e KernelMain
 KERNEL_ASMOBJS := $(patsubst $(SRC_DIR)%.asm,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.asm)) # TODO: Remvoe
 KERNEL_OBJS 	  = $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.cpp))
 KERNEL_OBJS 	 += $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*/*.cpp))
