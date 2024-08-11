@@ -1,6 +1,6 @@
 #include "Drivers/SerialPort.h"
 
-extern "C" int KernelMain()
+extern "C" void KernelMain()
 {
   asm("cli");
 

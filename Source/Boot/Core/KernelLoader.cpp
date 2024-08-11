@@ -22,7 +22,7 @@ void KernelLoader::Load()
   Graphics::PrintHexLn(s_EntryAddress);
   // TODO: End debug code
 
-  typedef int (*KernelEntry)();
+  typedef void (*KernelEntry)();
   auto kernelMain = (KernelEntry)s_EntryAddress;
 
   kernelMain();
