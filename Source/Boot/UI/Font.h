@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Types.h"
+#include "Core/Types.h"
 
 #define FONT_WIDTH  8
 #define FONT_HEIGHT 16

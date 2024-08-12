@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Types.h"
+#include "Core/Types.h"
 
 #define ELFCLASSNONE 0
 #define ELFCLASS32   1

@@ -1,16 +1,12 @@
 #pragma once
 
-#include "Types.h"
+#include <stdint.h>
 
 // TODO: Implement RDMSR
-class IO
-{
-public:
-  static UInt8 Read8(UInt16 port);
-  static UInt16 Read16(UInt16 port);
-  static UInt32 Read32(UInt16 port);
+uint8_t inb(uint16_t port);
+uint16_t inw(uint16_t port);
+uint32_t inl(uint16_t port);
 
-  static void Write8(UInt16 port, UInt8 data);
-  static void Write16(UInt16 port, UInt16 data);
-  static void Write32(UInt16 port, UInt32 data);
-};
+void outb(uint16_t port, uint8_t data);
+void outw(uint16_t port, uint16_t data);
+void outl(uint16_t port, uint32_t data);

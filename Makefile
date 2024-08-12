@@ -3,10 +3,11 @@ VND_DIR		 	:= Vendor
 OUT_DIR 		:= Binaries
 INT_DIR			:= Intermediate
 
-CXX 					:= g++
+CC 					:= gcc
+CXX 				:= g++
 AS 					:= nasm
 
-CFLAGS	:= -Wall -Werror -ffreestanding -mno-red-zone -fno-stack-protector -fno-rtti -fno-exceptions -fPIC -I$(SRC_DIR)/Common
+CFLAGS	:= -Wall -Werror -ffreestanding -mno-red-zone -fno-stack-protector -fPIC -nostdlib
 
 DARK_GRAY 	:= \033[1;30m
 LIGHT_GREEN := \033[1;32m
@@ -27,7 +28,7 @@ endef
 
 all: $(OUT_DIR)/EFI/Boot/Bootx64.efi $(OUT_DIR)/Kernel.elf
 
-BOOT_CFLAGS 	:= -I$(SRC_DIR)/Boot -I$(VND_DIR)/efi -DEFI_PLATFORM=EFI_ARCH_X64 -nostdlib
+BOOT_CFLAGS 	:= -I$(SRC_DIR)/Boot -I$(VND_DIR)/efi -DEFI_PLATFORM=EFI_ARCH_X64 -fno-rtti -fno-exceptions
 BOOT_LDFLAGS  := -shared -Wl,-dll -Wl,--subsystem,10 -e EfiMain
 BOOT_OBJS 		 = $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*.cpp))
 BOOT_OBJS 		+= $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Boot/*/*.cpp))
@@ -44,11 +45,11 @@ $(OUT_DIR)/EFI/Boot/Bootx64.efi: $(BOOT_OBJS)
 	$(CXX) $(BOOT_LDFLAGS) $^ -o $@
 	$(call print_success, "Converted Bootx64.so to Bootx64.efi successfully.")
 
-KERNEL_CFLAGS	 := -I$(SRC_DIR)/Kernel -g -std=c++17
-KERNEL_LDFLAGS := -O2 -static -fPIC -shared -Bsymbolic -e KernelMain
+KERNEL_CFLAGS	 := -I$(SRC_DIR)/Kernel -g
+KERNEL_LDFLAGS := -O2 -static -fPIC -shared -Bsymbolic -e kernel_main
 KERNEL_ASMOBJS := $(patsubst $(SRC_DIR)%.asm,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.asm)) # TODO: Remvoe
-KERNEL_OBJS 	  = $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.cpp))
-KERNEL_OBJS 	 += $(patsubst $(SRC_DIR)%.cpp,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*/*.cpp))
+KERNEL_OBJS 	  = $(patsubst $(SRC_DIR)%.c,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*.c))
+KERNEL_OBJS 	 += $(patsubst $(SRC_DIR)%.c,$(INT_DIR)%.o,$(wildcard $(SRC_DIR)/Kernel/*/*.c))
 
 $(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.asm
 	$(call print_action, "Assembling $<...")
@@ -56,16 +57,16 @@ $(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.asm
 	${AS} -f elf64 $< -o $@
 	$(call print_minor_success, "Assembled $< successfully.")
 
-$(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.cpp $(wildcard $(SRC_DIR)/Kernel/%.h)
+$(INT_DIR)/Kernel/%.o: $(SRC_DIR)/Kernel/%.c $(wildcard $(SRC_DIR)/Kernel/%.h)
 	$(call print_action, "Compiling $<...")
 	@mkdir -p $(@D)
-	$(CXX) $(CFLAGS) $(KERNEL_CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(KERNEL_CFLAGS) -c $< -o $@
 	$(call print_minor_success, "Compiled $< successfully.")
 
 $(INT_DIR)/Kernel/Kernel.so: $(KERNEL_ASMOBJS) $(KERNEL_OBJS)
 	$(call print_action, "Linking Kernel.so...")
 	@mkdir -p $(@D)
-	$(CXX) $(KERNEL_LDFLAGS) -o $@ $^
+	$(CC) $(KERNEL_LDFLAGS) -o $@ $^
 	$(call print_success, "Linked Kernel.so successfully.")
 
 $(OUT_DIR)/Kernel.elf: $(INT_DIR)/Kernel/Kernel.so

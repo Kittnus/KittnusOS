@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Memory.h"
-#include "Types.h"
+#include "Core/Types.h"
+#include "Services/Memory.h"
 
 class String
 {

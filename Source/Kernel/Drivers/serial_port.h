@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Types.h"
+#include <stdint.h>
 
 #define COM1 0x3F8
 #define COM2 0x2F8
@@ -19,27 +19,5 @@
 #define MODEM_STATUS_PORT(COM)  (COM + 6)
 #define SCRATCH_PORT(COM)       (COM + 7)
 
-class SerialPort
-{
-private:
-  UInt16 m_Com;
-  static bool s_InUsePorts[4];
-
-public:
-  SerialPort(UInt16 port = COM1);
-  ~SerialPort();
-
-  void Transmit(UInt8 byte);
-
-private:
-  void SetBaudRate(UInt16 divisor);
-  void ConfigureLineControl();
-  void ConfigureFifoControl();
-  void ConfigureModemControl();
-
-  bool IsTransmitEmpty();
-
-  int GetPortIndex();
-  bool IsInUse();
-  void SetInUse(bool inUse);
-};
+void init_serial_port(uint16_t port);
+void serial_transmit(uint16_t port, uint8_t byte);

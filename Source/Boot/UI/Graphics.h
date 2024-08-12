@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Core/Types.h"
 #include "Font.h"
-#include "Types.h"
 #include "Utilities/EfiMacros.h"
 
 class Graphics
